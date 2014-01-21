@@ -31,7 +31,7 @@ public struct Location {
 
 [System.Serializable]
 public class GameBoard : ScriptableObject {
-
+    public bool isAnyoneSelected = false;
 	public int sizex, sizey;
 	public TerrainType [] terrain;
 	public List<Vector2> unitLocs = new List<Vector2>();

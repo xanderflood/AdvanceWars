@@ -44,24 +44,26 @@ public class Unit : MonoBehaviour
         {
             HandleAttack();
         }
-        else if (isUnderCuror)
+        else if(isSelected)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                isSelected = true;
-                makeMoveIndicators();
-            }
-        }
-        else
-        {
-            if (Input.GetKeyDown(KeyCode.Z) && isSelected)
+            if (Input.GetKeyDown(KeyCode.Z))
             {
                 DeleteIndicators();
+                GameBoard.Instance.isAnyoneSelected = false;
                 isSelected = false;
             }
-            if (Input.GetKeyDown(KeyCode.Space) && isSelected)
+            if (Input.GetKeyDown(KeyCode.Space))
             {
                 handleMove();
+            }
+        }
+        else if (isUnderCuror)
+        {
+            if (Input.GetKeyDown(KeyCode.Space) && GameBoard.Instance.isAnyoneSelected == false)
+            {
+                GameBoard.Instance.isAnyoneSelected = true;
+                isSelected = true;
+                makeMoveIndicators();
             }
         }
     }
@@ -92,6 +94,7 @@ public class Unit : MonoBehaviour
                 GameBoard.Instance.unitLocs.Add(pos);
 
 
+                //xander:: if there is noone to attack, do we still want to skip this step and just finish the move?
                 // add attack indicators 
                 foreach (Vector2 loc in GameBoard.Instance.unitLocs)
                 {
@@ -105,14 +108,18 @@ public class Unit : MonoBehaviour
                 IndicatorList.Add(waitIndicator);
 
                 isSelected = false;
+                GameBoard.Instance.isAnyoneSelected = false;
                 isReadyToAttack = true;
-                break;
+                return;
             }
         }   
     }
 
     void makeMoveIndicators()
     {
+        //make the move nowhere indicator first, because recursive won't do it, as there is a unit there allready
+        UnityEngine.GameObject x = Instantiate(moveIndicator, this.transform.position, Quaternion.identity) as GameObject;
+        IndicatorList.Add(x);
         makeMoveIndicatorsRecursive(4, this.transform.position);
     }
 
@@ -122,17 +129,36 @@ public class Unit : MonoBehaviour
         {
             return;
         }
+        bool occupied = false;
         foreach (GameObject tmp in IndicatorList)
         { //computers are fast, so we can get away with this slow algorithms
             if (tmp.transform.position == pos)
             {
-                return;
+                occupied = true; //cant just return here because we are doing DFS, and sometimes we might have made a square at the end of the move range where we want to go, but we can get there faster, so still need to search out
             }
         }
-        UnityEngine.GameObject x = Instantiate(moveIndicator, pos, Quaternion.identity) as GameObject;
-        IndicatorList.Add(x);
-        Vector3 posCpy = pos;
 
+        // check to see if the tile we are looking at is allready occupied by a unit, if so dont add a move indicator
+        // todo: make it so you cant move though foes;
+
+        foreach (Vector2 loc in GameBoard.Instance.unitLocs)
+        {
+            if (Vector2.Distance(pos, loc) < .2f)
+            {
+                occupied = true;
+                break;
+            }
+        }
+
+        if (!occupied)
+        {
+            UnityEngine.GameObject x = Instantiate(moveIndicator, pos, Quaternion.identity) as GameObject;
+            IndicatorList.Add(x);
+        }
+
+
+
+        Vector3 posCpy = pos;
         //move right
         pos.x = pos.x + 1;
         makeMoveIndicatorsRecursive(movedist - 1, pos);   //todo: change -1 to -terrain move cost
