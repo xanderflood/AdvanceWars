@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 public class Unit : MonoBehaviour
 {
+	public int x, y;
     public bool isSelected;
     public bool isUnderCuror;
     public Transform cursorLoc;
@@ -18,10 +19,18 @@ public class Unit : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+
+		game = GameBoard.Instance;
+
         isSelected = false;
 		team = Team.None;
 		type = UnitType.Infantry;
+		
+		x = (int)transform.position.x;
+		y = (int)transform.position.y;
+
     }
+
     // Update is called once per frame
     void Update()
     {

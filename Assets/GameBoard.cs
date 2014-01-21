@@ -11,7 +11,7 @@ public enum TerrainType {
 };
 
 [System.Serializable]
-public enum Team {
+public enum Team : int {
 	Red = -1,
 	Blue = +1,
 	None = 0,
@@ -31,9 +31,30 @@ public struct Location {
 public class GameBoard : ScriptableObject {
 
 	public int sizex, sizey;
-	public Team current;
 	public TerrainType [] terrain;
 	public List<Location> unitLocs;
 	public List<Location> units;
 	
+	public Team current = Team.Red;
+	
+	private static GameBoard instance;
+	
+	private GameBoard() { }
+
+	public static GameBoard Instance
+	{
+		get 
+		{
+			if (instance == null)
+			{
+				instance = ScriptableObject.CreateInstance<GameBoard>();
+			}
+			return instance;
+		}
+	}
+
+	public void changeTeam() {
+		current = (Team)(-(int)current);
+	}
+
 }

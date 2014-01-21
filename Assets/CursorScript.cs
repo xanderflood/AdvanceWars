@@ -7,7 +7,7 @@ public class CursorScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+		game = GameBoard.Instance;
 	}
 
 	bool canmove = true; //indicate if a keyboard key can move a piece
@@ -49,6 +49,11 @@ public class CursorScript : MonoBehaviour {
 		{
 			canmove = false;
 			StartCoroutine(MoveInGrid((int)transform.position.x, (int)transform.position.y-gridSize, (int)transform.position.z));
+		}
+
+		// Check whether turn ended
+		if (Input.GetKeyDown (KeyCode.X)) {
+			GameBoard.Instance.changeTeam();
 		}
 	}
 	
@@ -141,4 +146,5 @@ public class CursorScript : MonoBehaviour {
 		//the work is ended now congratulation
 		canmove = true;
 	}
+	
 }
