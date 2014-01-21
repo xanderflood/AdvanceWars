@@ -1,35 +1,39 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [System.Serializable]
-public enum Terrain_Type {
-	
+public enum TerrainType {
+	Road = 1,
+	Field = 2,
+	Mountain = 4,
+	Forest = 4, //Ask Alex about this?
 };
 
 [System.Serializable]
 public enum Team {
-	
+	Red = -1,
+	Blue = +1,
+	None = 0,
 };
 
 [System.Serializable]
-public enum Unit_Type {
-	
+public enum UnitType {
+	Infantry,
 };
 
-public class GameBoard : MonoBehaviour {
+[System.Serializable]
+public struct Location {
+	int x, y;
+};
+
+[System.Serializable]
+public class GameBoard : ScriptableObject {
 
 	public int sizex, sizey;
-	public Terrain_Type [,] terrain = new Terrain_Type[40,40];
-	public Team [,] unit_team = new Team[40,40];
-	public Unit_Type [,] unit = new Unit_Type[40,40];
-
-	// Use this for initialization
-	void Start () {
+	public Team current;
+	public TerrainType [] terrain;
+	public List<Location> unitLocs;
+	public List<Location> units;
 	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }

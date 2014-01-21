@@ -3,11 +3,12 @@ using System.Collections;
 // code stolen from http://answers.unity3d.com/questions/9885/basic-movement-in-a-grid.html
 public class CursorScript : MonoBehaviour {
 
+	public GameBoard game;
+
 	// Use this for initialization
 	void Start () {
 	
 	}
-
 
 	bool canmove = true; //indicate if a keyboard key can move a piece
 	Vector3 targetPosition; //temporary value for moving (used in coroutines)
