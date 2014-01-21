@@ -22,22 +22,24 @@ public enum UnitType {
 	Infantry,
 };
 
-[System.Serializable]
+
+//xander:: any reason not to just use a vector2 here?
+/*[System.Serializable]
 public struct Location {
 	int x, y;
-};
+}; */
 
 [System.Serializable]
 public class GameBoard : ScriptableObject {
 
 	public int sizex, sizey;
 	public TerrainType [] terrain;
-	public List<Location> unitLocs;
-	public List<Location> units;
+	public List<Vector2> unitLocs = new List<Vector2>();
+	//public List<Location> units;
 	
 	public Team current = Team.Red;
 	
-	private static GameBoard instance;
+	private static GameBoard instance = new GameBoard();
 	
 	private GameBoard() { }
 
