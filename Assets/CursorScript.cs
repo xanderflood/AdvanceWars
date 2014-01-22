@@ -3,11 +3,9 @@ using System.Collections;
 // code stolen from http://answers.unity3d.com/questions/9885/basic-movement-in-a-grid.html
 public class CursorScript : MonoBehaviour {
 
-	public GameBoard game;
-
 	// Use this for initialization
 	void Start () {
-		game = GameBoard.Instance;
+
 	}
 
 	bool canmove = true; //indicate if a keyboard key can move a piece
@@ -49,11 +47,6 @@ public class CursorScript : MonoBehaviour {
 		{
 			canmove = false;
 			StartCoroutine(MoveInGrid((int)transform.position.x, (int)transform.position.y-gridSize, (int)transform.position.z));
-		}
-
-		// Check whether turn ended
-		if (Input.GetKeyDown (KeyCode.X)) {
-			GameBoard.Instance.changeTeam();
 		}
 	}
 	

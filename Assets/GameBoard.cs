@@ -7,7 +7,6 @@ public enum TerrainType {
 	Road = 1,
 	Field = 2,
 	Mountain = 4,
-	Forest = 4, //Ask Alex about this?
 };
 
 [System.Serializable]
@@ -33,13 +32,13 @@ public struct Location {
 public class GameBoard : ScriptableObject {
     public bool isAnyoneSelected = false;
 	public int sizex, sizey;
-	public TerrainType [] terrain;
+	public TerrainType [,] terrains;
 	public List<Vector2> unitLocs = new List<Vector2>();
 	//public List<Location> units;
 	
 	public Team current = Team.Red;
 	
-	private static GameBoard instance = new GameBoard();
+	private static GameBoard instance;
 	
 	private GameBoard() { }
 
@@ -50,8 +49,24 @@ public class GameBoard : ScriptableObject {
 			if (instance == null)
 			{
 				instance = ScriptableObject.CreateInstance<GameBoard>();
+				instance.Initialize();
 			}
 			return instance;
+		}
+	}
+
+	// Contains the sample level, basically
+	private void Initialize() {
+
+		sizex = sizey = 10;
+
+		terrains = new TerrainType[sizex, sizey];
+
+		// Load the gameboard
+		for (int x = 0; x < sizex; ++x) {
+			for (int y = 0; y < sizey; ++y) {
+				terrains[x, y] = (TerrainType)(1 << (x+2*y)%3);
+			}
 		}
 	}
 

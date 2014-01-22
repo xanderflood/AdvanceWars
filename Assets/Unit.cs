@@ -14,8 +14,6 @@ public class Unit : MonoBehaviour
     public Team team;
     public UnitType type;
 
-    public GameBoard game;
-
     private List<UnityEngine.GameObject> IndicatorList = new List<UnityEngine.GameObject>();
     // Use this for initialization
     void Start()
@@ -23,7 +21,6 @@ public class Unit : MonoBehaviour
         cursorLoc = GameObject.Find("cursor").transform;
         moveIndicator = Resources.Load("moveIndicator");
         AttackIndicator = Resources.Load("AttackIndicator");
-        game = GameBoard.Instance;
 
         isSelected = false;
         isReadyToAttack = false;
