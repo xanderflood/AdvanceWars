@@ -13,10 +13,11 @@ public class Unit : MonoBehaviour
     public UnityEngine.Object AttackIndicator;
     public Team team;
     public UnitType type;
+	public int hp = 10;
 
     private List<UnityEngine.GameObject> IndicatorList = new List<UnityEngine.GameObject>();
     // Use this for initialization
-    void Start()
+    public void Start()
     {
         cursorLoc = GameObject.Find("cursor").transform;
         moveIndicator = Resources.Load("moveIndicator");
@@ -56,7 +57,8 @@ public class Unit : MonoBehaviour
         }
         else if (isUnderCuror)
         {
-            if (Input.GetKeyDown(KeyCode.Space) && GameBoard.Instance.isAnyoneSelected == false)
+            if (Input.GetKeyDown(KeyCode.Space) && GameBoard.Instance.isAnyoneSelected == false
+			    && team == GameBoard.Instance.current)
             {
                 GameBoard.Instance.isAnyoneSelected = true;
                 isSelected = true;

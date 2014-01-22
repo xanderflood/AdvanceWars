@@ -34,7 +34,8 @@ public class GameBoard : ScriptableObject {
 	public int sizex, sizey;
 	public TerrainType [,] terrains;
 	public List<Vector2> unitLocs = new List<Vector2>();
-	//public List<Location> units;
+	public List<Unit> redunits;
+
 	
 	public Team current = Team.Red;
 	
