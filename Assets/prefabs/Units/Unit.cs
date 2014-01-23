@@ -99,7 +99,10 @@ public class Unit : MonoBehaviour
                 {
                     if (Vector2.Distance(pos, loc) < 1.2 && Vector2.Distance(pos, loc) > .3)
                     { // less than sqrt2, but not on the same square
-                        UnityEngine.GameObject x = Instantiate(AttackIndicator, loc, Quaternion.identity) as GameObject;
+                        Debug.Log("wtf");
+                        Vector3 newind = loc;
+                        newind.z = -2; // make sure indicators are above everything
+                        UnityEngine.GameObject x = Instantiate(AttackIndicator, newind, Quaternion.identity) as GameObject;
                         IndicatorList.Add(x);
                     }
                 }
