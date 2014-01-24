@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class RedUnit : Unit {
@@ -8,7 +8,7 @@ public class RedUnit : Unit {
 
 		base.Start ();
 
-		team = Team.Red;
+		team = TeamColor.Red;
 
 	}
 }

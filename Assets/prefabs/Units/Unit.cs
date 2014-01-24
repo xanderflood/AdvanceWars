@@ -12,10 +12,13 @@ public class Unit : MonoBehaviour
     public Transform cursorLoc;
     public UnityEngine.Object moveIndicator;
     public UnityEngine.Object AttackIndicator;
-    public Team team;
+    public TeamColor team;
     public UnitType type;
 	public int hp = 10;
 
+	public bool hasMovedThisTurn = false;
+	
+	public Team owner;
 
     // used to more or less use Dijkstra's algorithm to make movement indicators
     private struct PriQueueElt { public int x, y, moveDistRemaining;}
@@ -26,7 +29,7 @@ public class Unit : MonoBehaviour
     // Use this for initialization
     public void Start()
     {
-         lookingAtEnemyIndicators = false;
+        lookingAtEnemyIndicators = false;
         cursorLoc = GameObject.Find("cursor").transform;
         moveIndicator = Resources.Load("moveIndicator");
         AttackIndicator = Resources.Load("AttackIndicator");
@@ -34,7 +37,7 @@ public class Unit : MonoBehaviour
         isSelected = false;
         isReadyToAttack = false;
         isUnderCursor = false;
-        team = Team.None;
+        team = TeamColor.None;
         type = UnitType.Infantry;
 
         x = (int)transform.position.x;
@@ -66,7 +69,8 @@ public class Unit : MonoBehaviour
         else if (isUnderCursor)
         {
             // if  it is our turn and noone else is selected, we can move
-            if (Input.GetKeyDown(KeyCode.Space) && GameBoard.Instance.isAnyoneSelected == false && team == GameBoard.Instance.current)
+            if (Input.GetKeyDown(KeyCode.Space) && GameBoard.Instance.isAnyoneSelected == false
+			    && team == GameBoard.Instance.current && !hasMovedThisTurn)
             {
                 GameBoard.Instance.isAnyoneSelected = true;
                 isSelected = true;
@@ -121,8 +125,11 @@ public class Unit : MonoBehaviour
                 }
                 UnityEngine.GameObject waitIndicator = Instantiate(moveIndicator, pos, Quaternion.identity) as GameObject;
                 IndicatorList.Add(waitIndicator);
-                isReadyToAttack = true;
-                return;
+				isReadyToAttack = true;
+				
+				//finally, inform the team of the move so it can keep track of progress through the turn
+				owner.unitMoved();
+				hasMovedThisTurn = true;
             }
         }   
     }
@@ -323,9 +330,14 @@ public class Unit : MonoBehaviour
 		hp -= dmg;
 		
 		if (hp <= 0)
-			gameObject.SetActive (false);
+			Die ();
 		
 		TextMesh tm = (TextMesh)transform.Find ("HP Display").GetComponent(typeof(TextMesh));
 		tm.text = hp.ToString();
+	}
+	
+	void Die() {
+		gameObject.SetActive(false);
+		owner.unitDestroyed(this);
 	}
 }

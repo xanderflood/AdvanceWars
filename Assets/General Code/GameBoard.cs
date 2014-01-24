@@ -10,7 +10,7 @@ public enum TerrainType {
 };
 
 [System.Serializable]
-public enum Team : int {
+public enum TeamColor : int {
 	Red = -1,
 	Blue = +1,
 	None = 0,
@@ -20,7 +20,6 @@ public enum Team : int {
 public enum UnitType {
 	Infantry,
 };
-
 
 //xander:: any reason not to just use a vector2 here?
 /*[System.Serializable]
@@ -36,7 +35,10 @@ public class GameBoard : ScriptableObject {
 	public List<Vector2> unitLocs = new List<Vector2>();
 	public List<Unit> redunits;
 	
-	public Team current = Team.Red;
+	public TeamColor current = TeamColor.Red;
+
+	public Team redTeam;
+	public Team blueTeam;
 	
 	private static GameBoard instance;
 	
@@ -78,11 +80,19 @@ public class GameBoard : ScriptableObject {
 			terrains[x, 4] = TerrainType.Mountain;
 		}
 
-
 	}
 
 	public void changeTeam() {
-		current = (Team)(-(int)current);
+		
+		if (current == TeamColor.Red) {
+			current = TeamColor.Blue;
+			blueTeam.startTurn();
+			redTeam.endTurn();
+		} else {
+			current = TeamColor.Red;
+			redTeam.startTurn();
+			blueTeam.endTurn();
+		}
 	}
 
 }

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class BlueUnit : Unit {
@@ -7,6 +7,6 @@ public class BlueUnit : Unit {
 	{
 		base.Start ();
 		
-		team = Team.Blue;
+		team = TeamColor.Blue;
 	}
 }
