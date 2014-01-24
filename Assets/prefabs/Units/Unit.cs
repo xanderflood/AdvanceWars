@@ -8,13 +8,29 @@ public class Unit : MonoBehaviour
 {
     //xander, why do we need these, just use transform.position. no need to keep track of the info twice
     public int x, y;
-    public bool isSelected, isUnderCursor, isReadyToAttack,lookingAtEnemyIndicators;
+    public bool isSelected, isUnderCursor, lookingAtEnemyIndicators;
     public Transform cursorLoc;
     public UnityEngine.Object moveIndicator;
     public UnityEngine.Object AttackIndicator;
     public TeamColor team;
     public UnitType type;
 	public int hp = 10;
+
+	public bool hid_isReadyToAttack = false;
+	public bool isReadyToAttack {
+		set {
+			if (value == false) {
+
+				hasMovedThisTurn = true;
+				owner.unitMoved();
+			}
+			hid_isReadyToAttack = value;
+		}
+
+		get {
+			return hid_isReadyToAttack;
+		}
+	}
 
 	public bool hasMovedThisTurn = false;
 	
@@ -35,7 +51,6 @@ public class Unit : MonoBehaviour
         AttackIndicator = Resources.Load("AttackIndicator");
 
         isSelected = false;
-        isReadyToAttack = false;
         isUnderCursor = false;
         team = TeamColor.None;
         type = UnitType.Infantry;
@@ -126,12 +141,9 @@ public class Unit : MonoBehaviour
                 UnityEngine.GameObject waitIndicator = Instantiate(moveIndicator, pos, Quaternion.identity) as GameObject;
                 IndicatorList.Add(waitIndicator);
 				isReadyToAttack = true;
-				
-				//finally, inform the team of the move so it can keep track of progress through the turn
-				owner.unitMoved();
-				hasMovedThisTurn = true;
+				return;
             }
-        }   
+		}
     }
 
     void makeMoveIndicators()

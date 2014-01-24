@@ -9,8 +9,6 @@ public class Team : MonoBehaviour {
 	public TeamColor color;
 	public List<Unit> units;
 
-	public bool isTurn;
-
 	// Use this for initialization
 	void Start () {
 
@@ -30,26 +28,16 @@ public class Team : MonoBehaviour {
 
 	public void unitDestroyed(Unit unit) {
 		units.Remove (unit);
-
-		// NOTE: attacking the opponent CAN result in destroying the current unit,
-		// so we need to check whether the turn has ended
-		checkTurnEnded ();
 	}
 	
 	public void startTurn() {
-		isTurn = true;
-
 		foreach (Unit u in units) {
 			u.hasMovedThisTurn = false;
 		}
 	}
-	
-	public void endTurn() {
-		isTurn = false;
-	}
 
 	public void unitMoved() {
-		checkTurnEnded ();
+		checkTurnEnded();
 	}
 
 	public void checkTurnEnded() {
@@ -61,11 +49,13 @@ public class Team : MonoBehaviour {
 				break;
 			}
 		}
-		
-		if (GameBoard.Instance.current == color &&
-		    !unitsRemaining) {
-			GameBoard.Instance.changeTeam();
-			endTurn();
+
+		if (!unitsRemaining) {
+			GameBoard.Instance.changeTeam ();
+		} else {
+			
+			int zero = 0;
+			int error = 1 / zero;
 		}
 	}
 
