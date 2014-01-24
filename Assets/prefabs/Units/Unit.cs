@@ -7,7 +7,7 @@ public class Unit : MonoBehaviour
 {
     //xander, why do we need these, just use transform.position. no need to keep track of the info twice
     public int x, y;
-    public bool isSelected, isUnderCuror, isReadyToAttack;
+    public bool isSelected, isUnderCursor, isReadyToAttack;
     public Transform cursorLoc;
     public UnityEngine.Object moveIndicator;
     public UnityEngine.Object AttackIndicator;
@@ -25,7 +25,7 @@ public class Unit : MonoBehaviour
 
         isSelected = false;
         isReadyToAttack = false;
-        isUnderCuror = false;
+        isUnderCursor = false;
         team = Team.None;
         type = UnitType.Infantry;
 
@@ -55,7 +55,7 @@ public class Unit : MonoBehaviour
                 handleMove();
             }
         }
-        else if (isUnderCuror)
+        else if (isUnderCursor)
         {
             if (Input.GetKeyDown(KeyCode.Space) && GameBoard.Instance.isAnyoneSelected == false
 			    && team == GameBoard.Instance.current)
@@ -185,31 +185,53 @@ public class Unit : MonoBehaviour
             Destroy(x);
         }
         IndicatorList.Clear();
-    }
-
-    void OnTriggerExit2D(Collider2D other)
-    {
-
-        isUnderCuror = false;
-    }
-
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        isUnderCuror = true;
-    }
-
-    void HandleAttack()
-    {
-        //make sure that we are close to one of the indicators
-        foreach (GameObject tmp in IndicatorList)
-        {
-            if (Vector2.Distance(tmp.transform.position, cursorLoc.position) < .3f)
-            {
-                //here is where we check if we are attacking and attack if needed, otherwise juse end turn
-                DeleteIndicators();
-                isReadyToAttack = false;
-                break;
-            }
-        }
-    }
+	}
+	
+	void OnTriggerExit2D(Collider2D other)
+	{
+		if (CursorScript.Instance.unitUnderCursor == this) {
+			CursorScript.Instance.unitUnderCursor = null;
+		}
+		isUnderCursor = false;
+	}
+	
+	void OnTriggerEnter2D(Collider2D other)
+	{
+		CursorScript.Instance.unitUnderCursor = this;
+		isUnderCursor = true;
+	}
+	
+	void HandleAttack()
+	{
+		//make sure that we are close to one of the indicators
+		foreach (GameObject tmp in IndicatorList)
+		{
+			if (Vector2.Distance(tmp.transform.position, cursorLoc.position) < .3f)
+			{
+				//here is where we check if we are attacking and attack if needed, otherwise juse end turn
+				DeleteIndicators();
+				
+				Unit target = CursorScript.Instance.unitUnderCursor;
+				
+				if (target.team != GameBoard.Instance.current) {
+					target.DealDamage(5);
+					this.DealDamage(2);
+				}
+				
+				isReadyToAttack = false;
+				break;
+			}
+		}
+	}
+	
+	void DealDamage(int dmg) {
+		
+		hp -= dmg;
+		
+		if (hp <= 0)
+			gameObject.SetActive (false);
+		
+		TextMesh tm = (TextMesh)transform.Find ("HP Display").GetComponent(typeof(TextMesh));
+		tm.text = hp.ToString();
+	}
 }

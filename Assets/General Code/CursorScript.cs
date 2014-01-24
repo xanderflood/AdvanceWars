@@ -3,15 +3,19 @@ using System.Collections;
 // code stolen from http://answers.unity3d.com/questions/9885/basic-movement-in-a-grid.html
 public class CursorScript : MonoBehaviour {
 
+	public static CursorScript Instance;
+
 	// Use this for initialization
 	void Start () {
-
+		Instance = this;
 	}
 
 	bool canmove = true; //indicate if a keyboard key can move a piece
 	Vector3 targetPosition; //temporary value for moving (used in coroutines)
 	public float speed = .1F;
 	public int gridSize=1;
+	
+	public Unit unitUnderCursor;
 	
 	void Update()
 	{
