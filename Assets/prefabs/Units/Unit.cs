@@ -14,11 +14,13 @@ public class Unit : MonoBehaviour
     public Team team;
     public UnitType type;
 	public int hp = 10;
+    bool lookingAtEnemyIndicators;
 
     private List<UnityEngine.GameObject> IndicatorList = new List<UnityEngine.GameObject>();
     // Use this for initialization
     public void Start()
     {
+         lookingAtEnemyIndicators = false;
         cursorLoc = GameObject.Find("cursor").transform;
         moveIndicator = Resources.Load("moveIndicator");
         AttackIndicator = Resources.Load("AttackIndicator");
@@ -57,12 +59,22 @@ public class Unit : MonoBehaviour
         }
         else if (isUnderCursor)
         {
-            if (Input.GetKeyDown(KeyCode.Space) && GameBoard.Instance.isAnyoneSelected == false
-			    && team == GameBoard.Instance.current)
+            //looking at movment range
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                GameBoard.Instance.isAnyoneSelected = true;
-                isSelected = true;
-                makeMoveIndicators();
+                // if  it is our turn and noone else is selected, we can move
+                if (GameBoard.Instance.isAnyoneSelected == false && team == GameBoard.Instance.current)
+                {
+                    GameBoard.Instance.isAnyoneSelected = true;
+                    isSelected = true;
+                    makeMoveIndicators();
+                }
+                //if its not our turn, we can still look at their movement range, but only make things once
+                else if(!lookingAtEnemyIndicators)
+                {
+                    lookingAtEnemyIndicators = true;
+                    makeMoveIndicators();
+                }
             }
         }
     }
@@ -193,6 +205,10 @@ public class Unit : MonoBehaviour
 			CursorScript.Instance.unitUnderCursor = null;
 		}
 		isUnderCursor = false;
+        if (lookingAtEnemyIndicators) {
+            DeleteIndicators();
+            lookingAtEnemyIndicators = false;
+        }
 	}
 	
 	void OnTriggerEnter2D(Collider2D other)

@@ -68,6 +68,17 @@ public class GameBoard : ScriptableObject {
 				terrains[x, y] = (TerrainType)(1 << (x+2*y)%3);
 			}
 		}
+		// case our custom map:
+
+		for (int x = 0; x < sizex; ++x) {
+			terrains[x, 0] = TerrainType.Mountain;
+			terrains[x, 1] = TerrainType.Field;
+			terrains[x, 2] = TerrainType.Road;
+			terrains[x, 3] = TerrainType.Field;
+			terrains[x, 4] = TerrainType.Mountain;
+		}
+
+
 	}
 
 	public void changeTeam() {
