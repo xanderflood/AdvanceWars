@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public enum TerrainType {
 	Road = 1,
 	Field = 2,
-	Mountain = 4,
+	Mountain = 3,
 };
 
 [System.Serializable]

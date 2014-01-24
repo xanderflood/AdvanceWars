@@ -20,13 +20,13 @@ public class GameSystemControl : MonoBehaviour {
 			for (int y = 0; y < game.sizey; ++y) {
 				switch (game.terrains[x, y]) {
 				case TerrainType.Field:
-					Instantiate(field, new Vector3(x-5, y-5, 0), Quaternion.identity);
+					Instantiate(field, new Vector3(x, y, 0), Quaternion.identity);
 					break;
 				case TerrainType.Road:
-					Instantiate(road, new Vector3(x-5, y-5, 0), Quaternion.identity);
+					Instantiate(road, new Vector3(x, y, 0), Quaternion.identity);
 					break;
 				case TerrainType.Mountain:
-					Instantiate(mountain, new Vector3(x-5, y-5, 0), Quaternion.identity);
+					Instantiate(mountain, new Vector3(x, y, 0), Quaternion.identity);
 					break;
 				}
 			}

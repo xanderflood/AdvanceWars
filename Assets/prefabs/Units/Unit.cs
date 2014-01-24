@@ -3,20 +3,26 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 
+
 public class Unit : MonoBehaviour
 {
     //xander, why do we need these, just use transform.position. no need to keep track of the info twice
     public int x, y;
-    public bool isSelected, isUnderCursor, isReadyToAttack;
+    public bool isSelected, isUnderCursor, isReadyToAttack,lookingAtEnemyIndicators;
     public Transform cursorLoc;
     public UnityEngine.Object moveIndicator;
     public UnityEngine.Object AttackIndicator;
     public Team team;
     public UnitType type;
 	public int hp = 10;
-    bool lookingAtEnemyIndicators;
+
+
+    // used to more or less use Dijkstra's algorithm to make movement indicators
+    private struct PriQueueElt { public int x, y, moveDistRemaining;}
+    private List<PriQueueElt> bfsQueue = new List<PriQueueElt>();
 
     private List<UnityEngine.GameObject> IndicatorList = new List<UnityEngine.GameObject>();
+
     // Use this for initialization
     public void Start()
     {
@@ -59,22 +65,18 @@ public class Unit : MonoBehaviour
         }
         else if (isUnderCursor)
         {
-            //looking at movment range
-            if (Input.GetKeyDown(KeyCode.Space))
+            // if  it is our turn and noone else is selected, we can move
+            if (Input.GetKeyDown(KeyCode.Space) && GameBoard.Instance.isAnyoneSelected == false && team == GameBoard.Instance.current)
             {
-                // if  it is our turn and noone else is selected, we can move
-                if (GameBoard.Instance.isAnyoneSelected == false && team == GameBoard.Instance.current)
-                {
-                    GameBoard.Instance.isAnyoneSelected = true;
-                    isSelected = true;
-                    makeMoveIndicators();
-                }
-                //if its not our turn, we can still look at their movement range, but only make things once
-                else if(!lookingAtEnemyIndicators)
-                {
-                    lookingAtEnemyIndicators = true;
-                    makeMoveIndicators();
-                }
+                GameBoard.Instance.isAnyoneSelected = true;
+                isSelected = true;
+                makeMoveIndicators();
+            }
+            //if its not our turn, we can still look at their movement range, but only make things once
+            else if (Input.GetKeyDown(KeyCode.C) && !lookingAtEnemyIndicators && !GameBoard.Instance.isAnyoneSelected  && team != GameBoard.Instance.current)
+            {
+                lookingAtEnemyIndicators = true;
+                makeMoveIndicators();
             }
         }
     }
@@ -111,7 +113,6 @@ public class Unit : MonoBehaviour
                 {
                     if (Vector2.Distance(pos, loc) < 1.2 && Vector2.Distance(pos, loc) > .3)
                     { // less than sqrt2, but not on the same square
-                        Debug.Log("wtf");
                         Vector3 newind = loc;
                         newind.z = -2; // make sure indicators are above everything
                         UnityEngine.GameObject x = Instantiate(AttackIndicator, newind, Quaternion.identity) as GameObject;
@@ -120,9 +121,6 @@ public class Unit : MonoBehaviour
                 }
                 UnityEngine.GameObject waitIndicator = Instantiate(moveIndicator, pos, Quaternion.identity) as GameObject;
                 IndicatorList.Add(waitIndicator);
-
-                isSelected = false;
-                GameBoard.Instance.isAnyoneSelected = false;
                 isReadyToAttack = true;
                 return;
             }
@@ -132,38 +130,79 @@ public class Unit : MonoBehaviour
     void makeMoveIndicators()
     {
         //make the move nowhere indicator first, because recursive won't do it, as there is a unit there allready
+        int xpos = (int)Math.Round(this.transform.position.x, 0);
+        int ypos = (int)Math.Round(this.transform.position.y, 0);
+
+        //double check that our rounding did what we expected, panic if not
+        if (Math.Abs(xpos - this.transform.position.x) + Math.Abs(ypos - this.transform.position.y) > .3f)
+        {
+            Debug.Log("oh god da fuck is happenin");
+            int zero = 0;
+            int error = 1 / zero;
+        }
+        makeMoveIndicatorsRecursive(5, xpos, ypos);
         UnityEngine.GameObject x = Instantiate(moveIndicator, this.transform.position, Quaternion.identity) as GameObject;
         IndicatorList.Add(x);
-        makeMoveIndicatorsRecursive(4, this.transform.position);
     }
 
-    void makeMoveIndicatorsRecursive(int movedist, Vector3 pos)
+    void makeMoveIndicatorsRecursive(int movedist, int xloc, int yloc)
     {
-        if (movedist < 0)
+        
+        // first check if we are trying to move off the map. if so return;
+        int movecost;
+        try
         {
+            movecost = (int)GameBoard.Instance.terrains[xloc, yloc];
+        }
+        catch
+        {
+            //we are trying to move outside the map, so dont go any further.
+            callNextBFS();
             return;
         }
+
+
+        // next return if we are out of movement range
+        if (movedist < 0)
+        {
+            callNextBFS();
+            return;
+        }
+
+        Vector3 pos = new Vector3(xloc, yloc, -.2f);
+
+
         bool occupied = false;
         foreach (GameObject tmp in IndicatorList)
-        { //computers are fast, so we can get away with this slow algorithms
-            if (tmp.transform.position == pos)
+        { 
+            if (Vector2.Distance(tmp.transform.position, pos) < .3f)
             {
-                occupied = true; //cant just return here because we are doing DFS, and sometimes we might have made a square at the end of the move range where we want to go, but we can get there faster, so still need to search out
+                callNextBFS();
+                return;              
             }
         }
 
         // check to see if the tile we are looking at is allready occupied by a unit, if so dont add a move indicator
         // todo: make it so you cant move though foes;
-
         foreach (Vector2 loc in GameBoard.Instance.unitLocs)
         {
             if (Vector2.Distance(pos, loc) < .2f)
             {
-                occupied = true;
+                occupied = true; // we want to be able to walk though allied units          
                 break;
             }
         }
 
+        
+        // this is the most ghetto assert ever. I'm sorry. fix it later
+        if ( xloc < 0 || yloc <0)
+        {
+            Debug.Log("oh god da fuck is happenin");
+            int zero = 0;
+            int error = 1 / zero;
+        }
+
+        
         if (!occupied)
         {
             UnityEngine.GameObject x = Instantiate(moveIndicator, pos, Quaternion.identity) as GameObject;
@@ -171,25 +210,61 @@ public class Unit : MonoBehaviour
         }
 
 
+        int movementRemaining = movedist - movecost;
 
-        Vector3 posCpy = pos;
-        //move right
-        pos.x = pos.x + 1;
-        makeMoveIndicatorsRecursive(movedist - 1, pos);   //todo: change -1 to -terrain move cost
-        //move left
-        pos = posCpy;
-        pos.x = pos.x - 1;
-        makeMoveIndicatorsRecursive(movedist - 1, pos);
-        // move up
-        pos = posCpy;
-        pos.y = pos.y + 1;
-        makeMoveIndicatorsRecursive(movedist - 1, pos);
-        // move down
-        pos = posCpy;
-        pos.y = pos.y - 1;
-        makeMoveIndicatorsRecursive(movedist - 1, pos);
+        PriQueueElt queueElt;
+        queueElt.moveDistRemaining = movementRemaining;
+        //add move right to queue
+        queueElt.x = xloc +1;
+        queueElt.y = yloc;
+        bfsQueue.Add(queueElt);
+        //add move left to queue
+        queueElt.x = xloc - 1;
+        queueElt.y = yloc;
+        bfsQueue.Add(queueElt);
+        //add move up to queue
+        queueElt.x = xloc;
+        queueElt.y = yloc+1;
+        bfsQueue.Add(queueElt);
+        //add move down to queue
+        queueElt.x = xloc;
+        queueElt.y = yloc -1 ;
+        bfsQueue.Add(queueElt);
+
+        bfsQueue.Sort(new queueSort());
+        callNextBFS();
+
     }
 
+    // used to sort the list, BECAUSE C SHARP DOES NOT HAVE FUCKING PRIORITY QUEUES. 
+    private class queueSort : IComparer<PriQueueElt>
+    {
+        public int Compare(PriQueueElt c1, PriQueueElt c2)
+        {
+            if (c1.moveDistRemaining > c2.moveDistRemaining)
+            {
+                return -1;
+            }
+            else if (c1.moveDistRemaining > c2.moveDistRemaining) {
+                return 0;
+            }
+            return 1;
+        }
+    }
+
+    // calls the next element in our ghetto priority queue,  used only to make movement indicators
+    private void callNextBFS(){
+        if(bfsQueue.Count == 0){
+
+            return;
+        }
+
+        PriQueueElt queueElt = bfsQueue[0];
+        bfsQueue.RemoveAt(0);
+        makeMoveIndicatorsRecursive(queueElt.moveDistRemaining, queueElt.x, queueElt.y);    
+    }
+
+    // cleans up any movement or attack indicators we have made
     void DeleteIndicators()
     {
         foreach (GameObject x in IndicatorList)
@@ -205,6 +280,8 @@ public class Unit : MonoBehaviour
 			CursorScript.Instance.unitUnderCursor = null;
 		}
 		isUnderCursor = false;
+
+        // if we are currently looking at an opponetns rage, remove that data as soon as we stop hoving the cursor
         if (lookingAtEnemyIndicators) {
             DeleteIndicators();
             lookingAtEnemyIndicators = false;
@@ -233,7 +310,8 @@ public class Unit : MonoBehaviour
 					target.DealDamage(5);
 					this.DealDamage(2);
 				}
-				
+                isSelected = false;
+                GameBoard.Instance.isAnyoneSelected = false;		
 				isReadyToAttack = false;
 				break;
 			}
