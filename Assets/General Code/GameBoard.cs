@@ -37,8 +37,8 @@ public class GameBoard : ScriptableObject {
 	
 	public TeamColor current = TeamColor.Red;
 
-	public Team redTeam;
-	public Team blueTeam;
+	public Team redTeam = new Team();
+    public Team blueTeam = new Team();
 	
 	private static GameBoard instance;
 	
