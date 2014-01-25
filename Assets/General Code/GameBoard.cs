@@ -39,6 +39,8 @@ public class GameBoard : ScriptableObject {
 
 	public Team redTeam;
 	public Team blueTeam;
+
+	public bool someUnitActive;
 	
 	private static GameBoard instance;
 	
@@ -83,7 +85,10 @@ public class GameBoard : ScriptableObject {
 	}
 
 	public void changeTeam() {
-		
+
+		if (someUnitActive)
+			return;
+
 		SpriteRenderer sr = (SpriteRenderer)CursorScript.Instance.transform.
 			FindChild("sprite").GetComponent ("SpriteRenderer");
 
@@ -99,5 +104,4 @@ public class GameBoard : ScriptableObject {
 			sr.color = Color.red;
 		}
 	}
-
 }

@@ -24,22 +24,7 @@ public class Unit : MonoBehaviour
 	
 	private List<UnityEngine.GameObject> IndicatorList = new List<UnityEngine.GameObject>();
 
-	public bool hid_isReadyToAttack = false;
-	public bool isReadyToAttack {
-		set {
-			if (value == false) {
-
-				hasMovedThisTurn = true;
-                Debug.Log(owner);
-				owner.unitMoved();
-			}
-			hid_isReadyToAttack = value;
-		}
-
-		get {
-			return hid_isReadyToAttack;
-		}
-	}
+	public bool isReadyToAttack = false;
 
 	public bool hid_hasMovedThisTurn = false;
 	public bool hasMovedThisTurn {
@@ -101,6 +86,8 @@ public class Unit : MonoBehaviour
                 GameBoard.Instance.isAnyoneSelected = true;
                 isSelected = true;
                 makeMoveIndicators();
+
+				GameBoard.Instance.someUnitActive = true;
             }
             //if its not our turn, we can still look at their movement range, but only make things once
             else if (Input.GetKeyDown(KeyCode.C) && !lookingAtEnemyIndicators && !GameBoard.Instance.isAnyoneSelected  && team != GameBoard.Instance.current)
@@ -343,6 +330,12 @@ public class Unit : MonoBehaviour
                 isSelected = false;
                 GameBoard.Instance.isAnyoneSelected = false;		
 				isReadyToAttack = false;
+
+				hasMovedThisTurn = true;
+				Debug.Log(owner);
+				owner.unitMoved();
+
+				GameBoard.Instance.someUnitActive = false;
 				break;
 			}
 		}
