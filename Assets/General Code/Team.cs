@@ -21,9 +21,9 @@ public class Team : MonoBehaviour {
 
 	// ASSUMES THAT (x,y) IS A VALID LOCATION!
 	public void addUnit(int x, int y) {
-		Instantiate (unitModel, new Vector3(x, y, 0), Quaternion.identity);
-		((Unit)unitModel.GetComponent("Unit")).owner = this;
-		units.Add(unitModel);
+        Unit u = (Unit)Instantiate(unitModel, new Vector3(x, y, 0), Quaternion.identity);
+        u.owner = this;
+        units.Add(u);
 	}
 
 	public void unitDestroyed(Unit unit) {

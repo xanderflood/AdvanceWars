@@ -22,6 +22,7 @@ public class Unit : MonoBehaviour
 			if (value == false) {
 
 				hasMovedThisTurn = true;
+                Debug.Log(owner);               
 				owner.unitMoved();
 			}
 			hid_isReadyToAttack = value;
@@ -32,15 +33,19 @@ public class Unit : MonoBehaviour
 		}
 	}
 
-	public bool hasMovedThisTurn = false;
-	
-	public Team owner;
+
+    public bool hasMovedThisTurn = false;
+
+    public Team owner;
 
     // used to more or less use Dijkstra's algorithm to make movement indicators
     private struct PriQueueElt { public int x, y, moveDistRemaining;}
     private List<PriQueueElt> bfsQueue = new List<PriQueueElt>();
 
     private List<UnityEngine.GameObject> IndicatorList = new List<UnityEngine.GameObject>();
+
+
+
 
     // Use this for initialization
     public void Start()
