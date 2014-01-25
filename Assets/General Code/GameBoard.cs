@@ -84,12 +84,19 @@ public class GameBoard : ScriptableObject {
 
 	public void changeTeam() {
 		
+		SpriteRenderer sr = (SpriteRenderer)CursorScript.Instance.transform.
+			FindChild("sprite").GetComponent ("SpriteRenderer");
+
 		if (current == TeamColor.Red) {
 			current = TeamColor.Blue;
 			redTeam.endTurn();
+
+			sr.color = Color.blue;
 		} else {
 			current = TeamColor.Red;
 			blueTeam.endTurn();
+			
+			sr.color = Color.red;
 		}
 	}
 
