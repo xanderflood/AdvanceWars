@@ -330,12 +330,12 @@ public class Unit : MonoBehaviour
                 isSelected = false;
                 GameBoard.Instance.isAnyoneSelected = false;		
 				isReadyToAttack = false;
+				
+				GameBoard.Instance.someUnitActive = false;
 
 				hasMovedThisTurn = true;
 				//Debug.Log(owner);
 				owner.unitMoved();
-
-				GameBoard.Instance.someUnitActive = false;
 				break;
 			}
 		}
