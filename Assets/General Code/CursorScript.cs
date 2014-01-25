@@ -34,21 +34,37 @@ public class CursorScript : MonoBehaviour {
 	
 		if (Input.GetKey(KeyCode.UpArrow) == true && canmove == true)
 		{
+            if (transform.position.y >= GameBoard.Instance.sizey - 1)
+            {
+                return;
+            }
 			canmove = false;
 			StartCoroutine (MoveInGrid((int)transform.position.x, (int)transform.position.y+gridSize, (int)transform.position.z));
 		}
 		if (Input.GetKey(KeyCode.RightArrow) == true && canmove == true)
 		{
+            if (transform.position.x >= GameBoard.Instance.sizex - 1)
+            {
+                return;
+            }
 			canmove = false;
 			StartCoroutine(MoveInGrid((int)transform.position.x+gridSize, (int)transform.position.y, (int)transform.position.z));
 		}
 		if (Input.GetKey(KeyCode.LeftArrow) == true && canmove == true)
 		{
+            if (transform.position.x <= 0)
+            {
+                return;
+            }
 			canmove = false;
 			StartCoroutine(MoveInGrid((int)transform.position.x-gridSize, (int)transform.position.y, (int)transform.position.z));
 		}
 		if (Input.GetKey(KeyCode.DownArrow) == true && canmove == true)
 		{
+            if (transform.position.y <= 0)
+            {
+                return;
+            }
 			canmove = false;
 			StartCoroutine(MoveInGrid((int)transform.position.x, (int)transform.position.y-gridSize, (int)transform.position.z));
 		}
