@@ -332,7 +332,7 @@ public class Unit : MonoBehaviour
 				isReadyToAttack = false;
 
 				hasMovedThisTurn = true;
-				Debug.Log(owner);
+				//Debug.Log(owner);
 				owner.unitMoved();
 
 				GameBoard.Instance.someUnitActive = false;
