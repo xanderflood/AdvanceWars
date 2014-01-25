@@ -86,10 +86,10 @@ public class GameBoard : ScriptableObject {
 		
 		if (current == TeamColor.Red) {
 			current = TeamColor.Blue;
-			blueTeam.startTurn();
+			redTeam.endTurn();
 		} else {
 			current = TeamColor.Red;
-			redTeam.startTurn();
+			blueTeam.endTurn();
 		}
 	}
 

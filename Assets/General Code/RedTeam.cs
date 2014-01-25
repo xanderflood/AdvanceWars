@@ -7,12 +7,13 @@ public class RedTeam : Team {
 	void Start () {
 		GameBoard.Instance.redTeam = this;
 		color = TeamColor.Red;
-
+		
 		addUnit (1, 0);
+		addUnit (5, 5);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+		
 	}
 }
