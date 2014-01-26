@@ -124,16 +124,7 @@ public class Unit : MonoBehaviour
 
 
                 // look to see if any enemy units are within attack range, and make attack indicators as appropriate
-                Team opponent;
-                if (this.owner == GameBoard.Instance.redTeam)
-                {
-                    opponent = GameBoard.Instance.blueTeam;
-                }
-                else
-                {
-                    opponent = GameBoard.Instance.redTeam;
-                }
-
+                Team opponent = getOtherTeam();
                 //  foreach (Vector2 loc in GameBoard.Instance.unitLocs)
                 foreach (Unit u in opponent.units)
                 {
@@ -173,6 +164,20 @@ public class Unit : MonoBehaviour
         IndicatorList.Add(x);
     }
 
+    Team getOtherTeam()
+    {
+        Team opponent;
+        if (this.owner == GameBoard.Instance.redTeam)
+        {
+            opponent = GameBoard.Instance.blueTeam;
+        }
+        else
+        {
+            opponent = GameBoard.Instance.redTeam;
+        }
+        return opponent;
+    }
+
     void makeMoveIndicatorsRecursive(int movedist, int xloc, int yloc)
     {
         
@@ -207,9 +212,20 @@ public class Unit : MonoBehaviour
                 return;              
             }
         }
+         // check to see if there is a unit of the other team in the way, in that case dont move though them
+        Team opponent = getOtherTeam();
+        foreach (Unit u in opponent.units)
+        {
+            Vector2 loc = u.gameObject.transform.position;
+            if (Vector2.Distance(pos, loc) < .2f)
+            {
+                callNextBFS();
+                return;              
+
+            }
+        }
 
         // check to see if the tile we are looking at is allready occupied by a unit, if so dont add a move indicator
-        // todo: make it so you cant move though foes;
         foreach (Vector2 loc in GameBoard.Instance.unitLocs)
         {
             if (Vector2.Distance(pos, loc) < .2f)
@@ -234,7 +250,9 @@ public class Unit : MonoBehaviour
             UnityEngine.GameObject x = Instantiate(moveIndicator, pos, Quaternion.identity) as GameObject;
             IndicatorList.Add(x);
         }
-
+        if(movecost == 2){
+            movecost =1;
+        }
 
         int movementRemaining = movedist - movecost;
 
