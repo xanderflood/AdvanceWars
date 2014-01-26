@@ -267,7 +267,7 @@ public class Unit : MonoBehaviour
 
         
         // this is the most ghetto assert ever. I'm sorry. fix it later
-        if ( xloc < 0 || yloc <0)
+        if (xloc < 0 || yloc <0)
         {
             Debug.Log("oh god da fuck is happenin");
             int zero = 0;
@@ -411,6 +411,7 @@ public class Unit : MonoBehaviour
 	}
 	
 	void Die() {
+        GameBoard.Instance.unitLocs.Remove(this.gameObject.transform.position);
 		gameObject.SetActive(false);
 		owner.unitDestroyed(this);
 	}
