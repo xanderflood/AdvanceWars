@@ -8,8 +8,9 @@ public class RedTeam : Team {
 		GameBoard.Instance.redTeam = this;
 		color = TeamColor.Red;
 		
-		addUnit (1, 0);
-		addUnit (5, 5);
+		addUnit(0, 1);
+        addUnit(0, 2);
+        addUnit(0, 7);
 	}
 	
 	// Update is called once per frame

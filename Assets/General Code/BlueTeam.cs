@@ -7,9 +7,11 @@ public class BlueTeam : Team {
 	void Start () {
 		GameBoard.Instance.blueTeam = this;
 		color = TeamColor.Blue;
-		
-		addUnit (3, 0);
-		addUnit (5, 7);
+
+
+        addUnit(9, 1);
+        addUnit(9, 2);
+        addUnit(9, 7);
 	}
 	
 	// Update is called once per frame
