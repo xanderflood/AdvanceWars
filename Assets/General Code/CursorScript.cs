@@ -17,20 +17,16 @@ public class CursorScript : MonoBehaviour {
 	
 	public Unit unitUnderCursor;
 	
+	public SpriteRenderer cursorsr;
+	public SpriteRenderer crosshsr;
+
+	public int shouldbex = 0, shouldbey = 0;
+	
 	void Update()
 	{
-		/*
-		// normal movement
-		float h = Input.GetAxis ("Horizontal");
-		float v = Input.GetAxis ("Vertical");
-		
-		Vector2 vel = rigidbody2D.velocity;
-		vel.x = h*speed;
-		vel.y = v * speed;
 
-		rigidbody2D.velocity = vel;
-		*/
-		//grid movement
+		cursorsr = gameObject.transform.FindChild ("sprite").GetComponent<SpriteRenderer> ();
+		crosshsr = gameObject.transform.FindChild ("crosshair").GetComponent<SpriteRenderer> ();
 	
 		if (Input.GetKey(KeyCode.UpArrow) == true && canmove == true)
 		{
@@ -38,6 +34,7 @@ public class CursorScript : MonoBehaviour {
             {
                 return;
             }
+			shouldbey += 1;
 			canmove = false;
 			StartCoroutine (MoveInGrid((int)transform.position.x, (int)transform.position.y+gridSize, (int)transform.position.z));
 		}
@@ -47,6 +44,7 @@ public class CursorScript : MonoBehaviour {
             {
                 return;
             }
+			shouldbex += 1;
 			canmove = false;
 			StartCoroutine(MoveInGrid((int)transform.position.x+gridSize, (int)transform.position.y, (int)transform.position.z));
 		}
@@ -56,6 +54,7 @@ public class CursorScript : MonoBehaviour {
             {
                 return;
             }
+			shouldbex -= 1;
 			canmove = false;
 			StartCoroutine(MoveInGrid((int)transform.position.x-gridSize, (int)transform.position.y, (int)transform.position.z));
 		}
@@ -65,6 +64,7 @@ public class CursorScript : MonoBehaviour {
             {
                 return;
             }
+			shouldbey -= 1;
 			canmove = false;
 			StartCoroutine(MoveInGrid((int)transform.position.x, (int)transform.position.y-gridSize, (int)transform.position.z));
 		}

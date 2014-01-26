@@ -116,12 +116,11 @@ public class Unit : MonoBehaviour
                         break;
                     }
                 }
-                pos.x = cursorLoc.position.x;
-                pos.y = cursorLoc.position.y;
-                this.transform.position = pos;
+
+				pos = new Vector3(CursorScript.Instance.shouldbex, CursorScript.Instance.shouldbey, 0);
+				this.transform.position = pos;
                 //add it's new location to the list of unit locations
                 GameBoard.Instance.unitLocs.Add(pos);
-
 
                 // look to see if any enemy units are within attack range, and make attack indicators as appropriate
                 Team opponent = getOtherTeam();
@@ -364,6 +363,9 @@ public class Unit : MonoBehaviour
 				hasMovedThisTurn = true;
 				//Debug.Log(owner);
 				owner.unitMoved();
+
+				CursorScript.Instance.cursorsr.gameObject.SetActive(true);
+				CursorScript.Instance.crosshsr.gameObject.SetActive(false);
 				break;
 			}
 		}
