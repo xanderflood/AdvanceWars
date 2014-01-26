@@ -123,10 +123,21 @@ public class Unit : MonoBehaviour
                 GameBoard.Instance.unitLocs.Add(pos);
 
 
-                //xander:: if there is noone to attack, do we still want to skip this step and just finish the move?
-                // add attack indicators 
-                foreach (Vector2 loc in GameBoard.Instance.unitLocs)
+                // look to see if any enemy units are within attack range, and make attack indicators as appropriate
+                Team opponent;
+                if (this.owner == GameBoard.Instance.redTeam)
                 {
+                    opponent = GameBoard.Instance.blueTeam;
+                }
+                else
+                {
+                    opponent = GameBoard.Instance.redTeam;
+                }
+
+                //  foreach (Vector2 loc in GameBoard.Instance.unitLocs)
+                foreach (Unit u in opponent.units)
+                {
+                    Vector2 loc = u.gameObject.transform.position;
                     if (Vector2.Distance(pos, loc) < 1.2 && Vector2.Distance(pos, loc) > .3)
                     { // less than sqrt2, but not on the same square
                         Vector3 newind = loc;
