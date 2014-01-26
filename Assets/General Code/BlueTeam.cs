@@ -13,9 +13,4 @@ public class BlueTeam : Team {
         addUnit(9, 2);
         addUnit(9, 7);
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }

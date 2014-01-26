@@ -12,9 +12,4 @@ public class RedTeam : Team {
         addUnit(0, 2);
         addUnit(0, 7);
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }

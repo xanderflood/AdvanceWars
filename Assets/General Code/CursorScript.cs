@@ -159,5 +159,4 @@ public class CursorScript : MonoBehaviour {
 		//the work is ended now congratulation
 		canmove = true;
 	}
-	
 }

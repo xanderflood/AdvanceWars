@@ -33,14 +33,14 @@ public class GameBoard : ScriptableObject {
 	public int sizex, sizey;
 	public TerrainType [,] terrains;
 	public List<Vector2> unitLocs = new List<Vector2>();
-	public List<Unit> redunits;
 	
 	public TeamColor current = TeamColor.Red;
 
 	public Team redTeam;
 	public Team blueTeam;
-
+	
 	public bool someUnitActive;
+	public bool someUnitAttacking;
 	
 	private static GameBoard instance;
 	

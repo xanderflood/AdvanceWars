@@ -54,8 +54,7 @@ public class Unit : MonoBehaviour
         x = (int)transform.position.x;
         y = (int)transform.position.y;
         GameBoard.Instance.unitLocs.Add(transform.position);
-
-    }
+	}
 
     // Update is called once per frame
     void Update()
@@ -139,6 +138,7 @@ public class Unit : MonoBehaviour
                 UnityEngine.GameObject waitIndicator = Instantiate(moveIndicator, pos, Quaternion.identity) as GameObject;
                 IndicatorList.Add(waitIndicator);
 				isReadyToAttack = true;
+				GameBoard.Instance.someUnitAttacking = true;
 				return;
             }
 		}
@@ -178,7 +178,6 @@ public class Unit : MonoBehaviour
             return;
         }
 
-
         // next return if we are out of movement range
         if (movedist < 0)
         {
@@ -187,7 +186,6 @@ public class Unit : MonoBehaviour
         }
 
         Vector3 pos = new Vector3(xloc, yloc, -.2f);
-
 
         bool occupied = false;
         foreach (GameObject tmp in IndicatorList)
@@ -328,7 +326,8 @@ public class Unit : MonoBehaviour
 					this.DealDamage(2);
 				}
                 isSelected = false;
-                GameBoard.Instance.isAnyoneSelected = false;		
+                GameBoard.Instance.isAnyoneSelected = false;
+				GameBoard.Instance.someUnitAttacking = false;
 				isReadyToAttack = false;
 				
 				GameBoard.Instance.someUnitActive = false;
