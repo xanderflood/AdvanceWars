@@ -158,9 +158,29 @@ public class Unit : MonoBehaviour
             int zero = 0;
             int error = 1 / zero;
         }
-        makeMoveIndicatorsRecursive(5, xpos, ypos);
+
+        // add go nowhere indicator
         UnityEngine.GameObject x = Instantiate(moveIndicator, this.transform.position, Quaternion.identity) as GameObject;
         IndicatorList.Add(x);
+
+        //add 4 adjancent squares to our queue
+        PriQueueElt queueElt;
+        queueElt.moveDistRemaining = 3;
+        queueElt.x = xpos + 1;
+        queueElt.y = ypos;
+        bfsQueue.Add(queueElt);
+        queueElt.x = xpos - 1;
+        queueElt.y = ypos;
+        bfsQueue.Add(queueElt);
+        queueElt.x = xpos;
+        queueElt.y = ypos + 1;
+        bfsQueue.Add(queueElt);
+        queueElt.x = xpos;
+        queueElt.y = ypos - 1;
+        bfsQueue.Add(queueElt);
+
+
+        callNextBFS(); // start make_move_indicators_recursive
     }
 
     Team getOtherTeam()
@@ -192,9 +212,20 @@ public class Unit : MonoBehaviour
             callNextBFS();
             return;
         }
+        //Debug.Log(movecost);
+        // fix the movecots to thir correct values. abstract this away eventually, todo
+        if (movecost == 2)
+        {
+            movecost = 1;
+        }
+        else if (movecost == 3)
+        {
+            movecost = 2;
+        }
+
 
         // next return if we are out of movement range
-        if (movedist < 0)
+        if (movedist  - movecost < 0)
         {
             callNextBFS();
             return;
@@ -248,9 +279,6 @@ public class Unit : MonoBehaviour
         {
             UnityEngine.GameObject x = Instantiate(moveIndicator, pos, Quaternion.identity) as GameObject;
             IndicatorList.Add(x);
-        }
-        if(movecost == 2){
-            movecost =1;
         }
 
         int movementRemaining = movedist - movecost;
