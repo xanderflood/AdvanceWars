@@ -26,6 +26,9 @@ public class Team : MonoBehaviour {
 		}
 	}
 
+    public virtual void startTurn() 
+    { }
+
 	public void unitMoved() {
 		checkTurnEnded();
 	}

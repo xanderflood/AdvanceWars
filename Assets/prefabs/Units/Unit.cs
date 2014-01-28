@@ -182,6 +182,27 @@ public class Unit : MonoBehaviour
 
         callNextBFS(); // start make_move_indicators_recursive
     }
+    //moves unit as far left as legally allowed, called by AI team
+    public void moveLeft() {
+        Debug.Log("unit movin left");
+        makeMoveIndicators();
+        // x and y values for the current furthest left movement indicator
+        int x = 1000;
+        int y = 1000;
+        foreach (UnityEngine.GameObject indicator in IndicatorList)
+        {
+            if (indicator.transform.position.x < x) {
+                x = (int)Math.Round(indicator.transform.position.x);
+                y = (int)Math.Round(indicator.transform.position.y);
+            }
+        }
+        Vector3 newPos;
+        newPos.z = this.transform.position.z;
+        newPos.x = x;
+        newPos.y = y;
+        this.transform.position = newPos;
+        DeleteIndicators();
+    }
 
     Team getOtherTeam()
     {

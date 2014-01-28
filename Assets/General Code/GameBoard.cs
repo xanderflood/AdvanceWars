@@ -90,7 +90,6 @@ public class GameBoard : ScriptableObject {
 	}
 
 	public void changeTeam() {
-
 		if (someUnitActive)
 			return;
 
@@ -100,12 +99,16 @@ public class GameBoard : ScriptableObject {
 		if (current == TeamColor.Red) {
 			current = TeamColor.Blue;
 			redTeam.endTurn();
-
-			sr.color = Color.blue;
+            blueTeam.startTurn();
+            // if blue team is not an AI, change the color of the cursor
+            if (blueTeam is BlueTeam) 
+            {
+                sr.color = Color.blue;
+            }
 		} else {
 			current = TeamColor.Red;
 			blueTeam.endTurn();
-			
+            redTeam.startTurn();
 			sr.color = Color.red;
 		}
 	}
