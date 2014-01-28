@@ -65,7 +65,7 @@ public class Unit : MonoBehaviour
         }
         else if(isSelected)
         {
-            if (Input.GetKeyDown(KeyCode.Z))
+            if (Input.GetKeyDown(KeyCode.Z) && !isReadyToAttack)
             {
                 DeleteIndicators();
                 GameBoard.Instance.isAnyoneSelected = false;
