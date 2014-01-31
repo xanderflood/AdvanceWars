@@ -34,13 +34,13 @@ public class Team : MonoBehaviour {
 	}
 
 	public void checkTurnEnded() {
-
+		
 		foreach (Unit u in units) {
 			if (!u.hasMovedThisTurn) {
 				return;
 			}
 		}
-
+		
 		GameBoard.Instance.changeTeam ();
 	}
 

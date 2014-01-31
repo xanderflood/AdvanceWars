@@ -35,6 +35,8 @@ public class UAMScript : MonoBehaviour {
 				gameObject.SetActive(false);
 				target.isSelected = false;
 				GameBoard.Instance.isAnyoneSelected = false;
+				GameBoard.Instance.someUnitAttacking = false;
+				GameBoard.Instance.someUnitActive = false;
 				target.hasMovedThisTurn = true;
 				//Debug.Log(owner);
 				target.owner.unitMoved();
