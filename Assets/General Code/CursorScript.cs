@@ -21,52 +21,48 @@ public class CursorScript : MonoBehaviour {
 	public SpriteRenderer crosshsr;
 
 	public int shouldbex = 0, shouldbey = 0;
+
+	public GameObject unitMenu;
 	
 	void Update()
 	{
 
-		cursorsr = gameObject.transform.FindChild ("sprite").GetComponent<SpriteRenderer> ();
-		crosshsr = gameObject.transform.FindChild ("crosshair").GetComponent<SpriteRenderer> ();
-	
-		if (Input.GetKey(KeyCode.UpArrow) == true && canmove == true)
-		{
-            if (transform.position.y >= GameBoard.Instance.sizey - 1)
-            {
-                return;
-            }
-			shouldbey += 1;
-			canmove = false;
-			StartCoroutine (MoveInGrid((int)transform.position.x, (int)transform.position.y+gridSize, (int)transform.position.z));
-		}
-		if (Input.GetKey(KeyCode.RightArrow) == true && canmove == true)
-		{
-            if (transform.position.x >= GameBoard.Instance.sizex - 1)
-            {
-                return;
-            }
-			shouldbex += 1;
-			canmove = false;
-			StartCoroutine(MoveInGrid((int)transform.position.x+gridSize, (int)transform.position.y, (int)transform.position.z));
-		}
-		if (Input.GetKey(KeyCode.LeftArrow) == true && canmove == true)
-		{
-            if (transform.position.x <= 0)
-            {
-                return;
-            }
-			shouldbex -= 1;
-			canmove = false;
-			StartCoroutine(MoveInGrid((int)transform.position.x-gridSize, (int)transform.position.y, (int)transform.position.z));
-		}
-		if (Input.GetKey(KeyCode.DownArrow) == true && canmove == true)
-		{
-            if (transform.position.y <= 0)
-            {
-                return;
-            }
-			shouldbey -= 1;
-			canmove = false;
-			StartCoroutine(MoveInGrid((int)transform.position.x, (int)transform.position.y-gridSize, (int)transform.position.z));
+		if (!unitMenu.activeSelf) {
+			cursorsr = gameObject.transform.FindChild ("sprite").GetComponent<SpriteRenderer> ();
+			crosshsr = gameObject.transform.FindChild ("crosshair").GetComponent<SpriteRenderer> ();
+			
+			if (Input.GetKey (KeyCode.UpArrow) == true && canmove == true) {
+				if (transform.position.y >= GameBoard.Instance.sizey - 1) {
+					return;
+				}
+				shouldbey += 1;
+				canmove = false;
+				StartCoroutine (MoveInGrid ((int)transform.position.x, (int)transform.position.y + gridSize, (int)transform.position.z));
+			}
+			if (Input.GetKey (KeyCode.RightArrow) == true && canmove == true) {
+				if (transform.position.x >= GameBoard.Instance.sizex - 1) {
+					return;
+				}
+				shouldbex += 1;
+				canmove = false;
+				StartCoroutine (MoveInGrid ((int)transform.position.x + gridSize, (int)transform.position.y, (int)transform.position.z));
+			}
+			if (Input.GetKey (KeyCode.LeftArrow) == true && canmove == true) {
+				if (transform.position.x <= 0) {
+					return;
+				}
+				shouldbex -= 1;
+				canmove = false;
+				StartCoroutine (MoveInGrid ((int)transform.position.x - gridSize, (int)transform.position.y, (int)transform.position.z));
+			}
+			if (Input.GetKey (KeyCode.DownArrow) == true && canmove == true) {
+				if (transform.position.y <= 0) {
+					return;
+				}
+				shouldbey -= 1;
+				canmove = false;
+				StartCoroutine (MoveInGrid ((int)transform.position.x, (int)transform.position.y - gridSize, (int)transform.position.z));
+			}
 		}
 	}
 	

@@ -89,7 +89,8 @@ public class Unit : MonoBehaviour
 				GameBoard.Instance.someUnitActive = true;
             }
             //if its not our turn, we can still look at their movement range, but only make things once
-            else if (Input.GetKeyDown(KeyCode.C) && !lookingAtEnemyIndicators && !GameBoard.Instance.isAnyoneSelected  && team != GameBoard.Instance.current)
+            else if (Input.GetKeyDown(KeyCode.C) && !lookingAtEnemyIndicators
+			         && !GameBoard.Instance.isAnyoneSelected  && team != GameBoard.Instance.current)
             {
                 lookingAtEnemyIndicators = true;
                 makeMoveIndicators();
@@ -119,31 +120,38 @@ public class Unit : MonoBehaviour
 
 				pos = new Vector3(CursorScript.Instance.shouldbex, CursorScript.Instance.shouldbey, 0);
 				this.transform.position = pos;
-                //add it's new location to the list of unit locations
+                //add its new location to the list of unit locations
                 GameBoard.Instance.unitLocs.Add(pos);
 
-                // look to see if any enemy units are within attack range, and make attack indicators as appropriate
-                Team opponent = getOtherTeam();
-                //  foreach (Vector2 loc in GameBoard.Instance.unitLocs)
-                foreach (Unit u in opponent.units)
-                {
-                    Vector2 loc = u.gameObject.transform.position;
-                    if (Vector2.Distance(pos, loc) < 1.2 && Vector2.Distance(pos, loc) > .3)
-                    { // less than sqrt2, but not on the same square
-                        Vector3 newind = loc;
-                        newind.z = -2; // make sure indicators are above everything
-                        UnityEngine.GameObject x = Instantiate(AttackIndicator, newind, Quaternion.identity) as GameObject;
-                        IndicatorList.Add(x);
-                    }
-                }
-                UnityEngine.GameObject waitIndicator = Instantiate(moveIndicator, pos, Quaternion.identity) as GameObject;
-                IndicatorList.Add(waitIndicator);
-				isReadyToAttack = true;
-				GameBoard.Instance.someUnitAttacking = true;
+				CursorScript.Instance.unitMenu.GetComponent<UAMScript>().target = this;
+				CursorScript.Instance.unitMenu.SetActive(true);
 				return;
             }
 		}
     }
+
+	public void prepareToAttack() {
+		
+		// look to see if any enemy units are within attack range, and make attack indicators as appropriate
+		Team opponent = getOtherTeam();
+		Vector2 pos = gameObject.transform.position;
+		//  foreach (Vector2 loc in GameBoard.Instance.unitLocs)
+		foreach (Unit u in opponent.units)
+		{
+			Vector2 loc = u.gameObject.transform.position;
+			if (Vector2.Distance(pos, loc) < 1.2 && Vector2.Distance(pos, loc) > .3)
+			{ // less than sqrt2, but not on the same square
+				Vector3 newind = loc;
+				newind.z = -2; // make sure indicators are above everything
+				UnityEngine.GameObject x = Instantiate(AttackIndicator, newind, Quaternion.identity) as GameObject;
+				IndicatorList.Add(x);
+			}
+		}
+		UnityEngine.GameObject waitIndicator = Instantiate(moveIndicator, pos, Quaternion.identity) as GameObject;
+		IndicatorList.Add(waitIndicator);
+		isReadyToAttack = true;
+		GameBoard.Instance.someUnitAttacking = true;
+	}
 
     void makeMoveIndicators()
     {

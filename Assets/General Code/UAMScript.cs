@@ -29,9 +29,18 @@ public class UAMScript : MonoBehaviour {
 
 		if (Input.GetKeyDown ("space")) {
 			if (onFire) {
-				//do attack
+				target.prepareToAttack();
+				gameObject.SetActive(false);
 			} else {
-				//cancel
+				gameObject.SetActive(false);
+				target.isSelected = false;
+				GameBoard.Instance.isAnyoneSelected = false;
+				target.hasMovedThisTurn = true;
+				//Debug.Log(owner);
+				target.owner.unitMoved();
+
+				pos.y += diff;
+				onFire = true;
 			}
 		}
 
