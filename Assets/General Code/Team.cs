@@ -10,9 +10,10 @@ public class Team : MonoBehaviour {
 	public List<Unit> units;
 
 	// ASSUMES THAT (x,y) IS A VALID LOCATION!
-	public void addUnit(int x, int y) {
+	public void addUnit(int x, int y, TeamColor color) {
         Unit u = (Unit)Instantiate(unitModel, new Vector3(x, y, 0), Quaternion.identity);
         u.owner = this;
+        u.team = color;
         units.Add(u);
 	}
 

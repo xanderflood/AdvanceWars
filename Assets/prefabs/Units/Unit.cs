@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 
-public class Unit : MonoBehaviour
+public abstract class Unit : MonoBehaviour
 {
     //xander, why do we need these, just use transform.position. no need to keep track of the info twice
     public int x, y;
@@ -38,6 +38,8 @@ public class Unit : MonoBehaviour
 		}
 	}
 
+    abstract protected int GetUnitMoveCost(TerrainType terrain);
+
     // Use this for initialization
     public void Start()
     {
@@ -48,7 +50,6 @@ public class Unit : MonoBehaviour
 
         isSelected = false;
         isUnderCursor = false;
-        team = TeamColor.None;
         type = UnitType.Infantry;
 
         x = (int)transform.position.x;
@@ -192,7 +193,7 @@ public class Unit : MonoBehaviour
     }
     //moves unit as far left as legally allowed, called by AI team
     public void moveLeft() {
-        Debug.Log("unit movin left");
+        //Debug.Log("unit movin left");
         makeMoveIndicators();
         // x and y values for the current furthest left movement indicator
         int x = 1000;
@@ -203,11 +204,29 @@ public class Unit : MonoBehaviour
                 x = (int)Math.Round(indicator.transform.position.x);
                 y = (int)Math.Round(indicator.transform.position.y);
             }
+            else if (indicator.transform.position.x == x && indicator.transform.position.y > y) {
+                x = (int)Math.Round(indicator.transform.position.x);
+                y = (int)Math.Round(indicator.transform.position.y);
+            }
         }
+
+
         Vector3 newPos;
         newPos.z = this.transform.position.z;
         newPos.x = x;
         newPos.y = y;
+
+        //remove old location of this unit from our list, and add new one
+        foreach (Vector2 loc in GameBoard.Instance.unitLocs)
+        {
+            if (Vector2.Distance(newPos, loc) < .3f)
+            {
+                GameBoard.Instance.unitLocs.Remove(loc);
+                break;
+            }
+        }
+        GameBoard.Instance.unitLocs.Add(newPos);
+
         this.transform.position = newPos;
         DeleteIndicators();
     }
@@ -230,10 +249,10 @@ public class Unit : MonoBehaviour
     {
         
         // first check if we are trying to move off the map. if so return;
-        int movecost;
+        TerrainType terrain;
         try
         {
-            movecost = (int)GameBoard.Instance.terrains[xloc, yloc];
+            terrain = GameBoard.Instance.terrains[xloc, yloc];
         }
         catch
         {
@@ -243,6 +262,7 @@ public class Unit : MonoBehaviour
         }
         //Debug.Log(movecost);
         // fix the movecots to thir correct values. abstract this away eventually, todo
+        /*
         if (movecost == 2)
         {
             movecost = 1;
@@ -251,8 +271,10 @@ public class Unit : MonoBehaviour
         {
             movecost = 2;
         }
+        */
 
-
+        int movecost = GetUnitMoveCost(terrain);
+     
         // next return if we are out of movement range
         if (movedist  - movecost < 0)
         {

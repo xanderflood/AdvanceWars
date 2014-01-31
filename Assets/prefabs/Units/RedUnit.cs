@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class RedUnit : Unit {
+public abstract class RedUnit : Unit {
 	
 	void Start()
 	{

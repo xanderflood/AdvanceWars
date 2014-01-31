@@ -8,8 +8,8 @@ public class RedTeam : Team {
 		GameBoard.Instance.redTeam = this;
 		color = TeamColor.Red;
 		
-		addUnit(0, 1);
-        addUnit(0, 2);
-        addUnit(0, 7);
+		addUnit(0, 1, color);
+        addUnit(0, 2, color);
+        addUnit(0, 7, color);
 	}
 }
