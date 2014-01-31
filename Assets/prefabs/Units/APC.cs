@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Infintry : Unit {
+public class APC : Unit
+{
 
-    override protected int GetUnitMoveCost(TerrainType terrain) {
+    override protected int GetUnitMoveCost(TerrainType terrain)
+    {
         if (terrain == TerrainType.Field)
         {
             return 1;
@@ -14,14 +16,12 @@ public class Infintry : Unit {
         }
         else ///if (terrain == TerrainType.Mountain)
         {
-            return 2;
+            return 50;
         }
     }
 
-    override protected int GetUnitMoveRange() {
-        return 3;
+    override protected int GetUnitMoveRange()
+    {
+        return 6;
     }
-
-
-
 }

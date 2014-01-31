@@ -4,14 +4,22 @@ using System.Collections.Generic;
 
 public class Team : MonoBehaviour {
 
-	public Unit unitModel;
+	public Unit Infentry;
+    public Unit APC;
 	
 	public TeamColor color;
 	public List<Unit> units;
 
 	// ASSUMES THAT (x,y) IS A VALID LOCATION!
-	public void addUnit(int x, int y, TeamColor color) {
-        Unit u = (Unit)Instantiate(unitModel, new Vector3(x, y, 0), Quaternion.identity);
+	public void addUnit(int x, int y, TeamColor color, int type) {
+        Unit u;
+        if (type == 1)
+        {
+            u = (Unit)Instantiate(APC, new Vector3(x, y, 0), Quaternion.identity);
+        }
+        else {
+            u = (Unit)Instantiate(Infentry, new Vector3(x, y, 0), Quaternion.identity);            
+        }
         u.owner = this;
         u.team = color;
         units.Add(u);

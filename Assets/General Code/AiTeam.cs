@@ -9,9 +9,9 @@ public class AiTeam : Team
     {
         GameBoard.Instance.blueTeam = this;
         color = TeamColor.Blue;
-        addUnit(9, 1, color);
-        addUnit(9, 2, color);
-        addUnit(9, 7, color);
+       // addUnit(9, 1, color,1);
+        addUnit(9, 2, color,1);
+    //    addUnit(9, 7, color,1);
     }
 
     override public void  startTurn() {

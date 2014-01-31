@@ -39,6 +39,7 @@ public abstract class Unit : MonoBehaviour
 	}
 
     abstract protected int GetUnitMoveCost(TerrainType terrain);
+    abstract protected int GetUnitMoveRange();
 
     // Use this for initialization
     public void Start()
@@ -174,7 +175,7 @@ public abstract class Unit : MonoBehaviour
 
         //add 4 adjancent squares to our queue
         PriQueueElt queueElt;
-        queueElt.moveDistRemaining = 3;
+        queueElt.moveDistRemaining = GetUnitMoveRange();
         queueElt.x = xpos + 1;
         queueElt.y = ypos;
         bfsQueue.Add(queueElt);

@@ -9,8 +9,8 @@ public class BlueTeam : Team {
 		color = TeamColor.Blue;
 
 
-        addUnit(9, 1, color);
-        addUnit(9, 2, color);
-        addUnit(9, 7, color);
+        addUnit(9, 1, color, 0);
+        addUnit(9, 2, color, 0);
+        addUnit(9, 7, color, 0);
 	}
 }
