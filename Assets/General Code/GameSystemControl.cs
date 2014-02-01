@@ -43,6 +43,10 @@ public class GameSystemControl : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Q))
         {
             GameBoard.Instance.unitLocs.Clear();
+            GameBoard.Instance.GameOver = false;
+            GameBoard.Instance.isAnyoneSelected = false;
+            GameBoard.Instance.someUnitActive = false;
+            GameBoard.Instance.someUnitAttacking = false;
             if (GameBoard.Instance.curlevel == 0)
             {
                 GameBoard.Instance.curlevel = 1;
