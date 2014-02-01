@@ -9,7 +9,7 @@ public class RedTeam : Team {
 		color = TeamColor.Red;
 
         addUnit(0, 1, color, 0);
-        addUnit(0, 2, color, 0);
+        addUnit(0, 2, color, 2);
         addUnit(0, 7, color, 0);
 	}
 }
