@@ -42,15 +42,16 @@ public class GameSystemControl : MonoBehaviour {
 		}
         if (Input.GetKeyDown(KeyCode.Q))
         {
+            GameBoard.Instance.unitLocs.Clear();
             if (GameBoard.Instance.curlevel == 0)
             {
                 GameBoard.Instance.curlevel = 1;
-                Application.LoadLevel(1);
+                Application.LoadLevel("SampleLvl1");
             }
-            if (GameBoard.Instance.curlevel == 1)
+            else if (GameBoard.Instance.curlevel == 1)
             {
                 GameBoard.Instance.curlevel = 0;
-                Application.LoadLevel(0);
+                Application.LoadLevel("MyCustomLevel");
             }
         }
 

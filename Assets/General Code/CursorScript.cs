@@ -10,7 +10,7 @@ public class CursorScript : MonoBehaviour {
 		Instance = this;
 	}
 
-	bool canmove = true; //indicate if a keyboard key can move a piece
+	public bool canmove = true; //indicate if a keyboard key can move a piece
 	Vector3 targetPosition; //temporary value for moving (used in coroutines)
 	public float speed = .1F;
 	public int gridSize=1;

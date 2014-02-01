@@ -79,8 +79,8 @@ public class GameBoard : ScriptableObject {
 			terrains[x, 1] = TerrainType.Field;
 			terrains[x, 2] = TerrainType.Road;
 			terrains[x, 3] = TerrainType.Field;
-			terrains[x, 4] = TerrainType.Mountain;
-            terrains[x, 5] = TerrainType.Mountain;
+			terrains[x, 4] = TerrainType.Field;
+            terrains[x, 5] = TerrainType.Field;
             terrains[x, 6] = TerrainType.Field;
             terrains[x, 7] = TerrainType.Road;
             terrains[x, 8] = TerrainType.Field;
