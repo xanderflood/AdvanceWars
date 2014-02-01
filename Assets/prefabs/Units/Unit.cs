@@ -8,7 +8,8 @@ public abstract class Unit : MonoBehaviour
 {
     //xander, why do we need these, just use transform.position. no need to keep track of the info twice
     public int x, y;
-    public bool isSelected, isUnderCursor, lookingAtEnemyIndicators;
+    public bool isSelected , lookingAtEnemyIndicators;
+    public bool isUnderCursor = false;
     public Transform cursorLoc;
     public UnityEngine.Object moveIndicator;
     public UnityEngine.Object AttackIndicator;
@@ -106,6 +107,9 @@ public abstract class Unit : MonoBehaviour
 
     void handleMove() {
         // awful code that checks if the curser is over one of the range indacators we made, 
+        if (!CursorScript.Instance.canmove) {
+            return;
+        }
         foreach (GameObject tmp in IndicatorList)
         {
             if (Vector2.Distance(tmp.transform.position, cursorLoc.position) < .3f)
@@ -235,7 +239,7 @@ public abstract class Unit : MonoBehaviour
         //remove old location of this unit from our list, and add new one
         foreach (Vector2 loc in GameBoard.Instance.unitLocs)
         {
-            if (Vector2.Distance(newPos, loc) < .3f)
+            if (Vector2.Distance(this.transform.position, loc) < .3f)
             {
                 GameBoard.Instance.unitLocs.Remove(loc);
                 break;
