@@ -4,6 +4,10 @@ using System.Collections;
 public class APC : Unit
 {
 
+	void Start () {
+		isVehicle = true;
+	}
+
     override protected int GetUnitMoveCost(TerrainType terrain)
     {
         if (terrain == TerrainType.Field)
@@ -35,4 +39,8 @@ public class APC : Unit
         base.Die();
 
     }
+
+	override protected int GetAttack(Unit target) {
+		return 0;
+	}
 }

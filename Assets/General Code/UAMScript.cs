@@ -16,15 +16,21 @@ public class UAMScript : MonoBehaviour {
 		u.makeAttackIndicators ();
 		
 		Vector3 pos = transform.FindChild ("MenuIcon").transform.position;
+		Color col = transform.FindChild ("Fire").GetComponent<SpriteRenderer>().color;
 
 		if (u.IndicatorList.Count == 0) {
 			pos.y -= diff;
 			canFire = false;
+			col.a = 50;
+
 		} else {
 			canFire = true;
+			col.a = 255;
 		}
 
 		transform.FindChild ("MenuIcon").transform.position = pos;
+		transform.FindChild ("Fire").GetComponent<SpriteRenderer> ().color = col;
+		Debug.Log (transform.FindChild ("Fire").GetComponent<SpriteRenderer> ().color.a);
 	}
 
 	// Use this for initialization

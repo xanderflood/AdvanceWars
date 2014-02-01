@@ -21,7 +21,14 @@ public class Infintry : Unit {
     override protected int GetUnitMoveRange() {
         return 3;
     }
+	
+	override protected int GetAttack(Unit target) {
 
-
+		if (target.isVehicle) {
+			return 0;
+		}
+		
+		return (int)System.Math.Round((hp / 10f)*5f);
+	}
 
 }

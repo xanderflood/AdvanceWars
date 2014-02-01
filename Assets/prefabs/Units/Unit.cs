@@ -15,6 +15,8 @@ public abstract class Unit : MonoBehaviour
     public TeamColor team;
     public UnitType type;
 	public int hp = 10;
+
+	public bool isVehicle = false;
 	
 	public Team owner;
 	
@@ -40,6 +42,7 @@ public abstract class Unit : MonoBehaviour
 
     abstract protected int GetUnitMoveCost(TerrainType terrain);
     abstract protected int GetUnitMoveRange();
+	abstract protected int GetAttack(Unit target);
 
     // Use this for initialization
     public void Start()
@@ -442,8 +445,8 @@ public abstract class Unit : MonoBehaviour
 				Unit target = CursorScript.Instance.unitUnderCursor;
 				
 				if (target.team != GameBoard.Instance.current) {
-					target.DealDamage(3);
-					this.DealDamage(1);
+					target.DealDamage(this.GetAttack(target));
+					this.DealDamage(target.GetAttack(this));
 				}
                 isSelected = false;
                 GameBoard.Instance.isAnyoneSelected = false;
