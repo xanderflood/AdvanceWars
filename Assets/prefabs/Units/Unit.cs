@@ -67,12 +67,13 @@ public abstract class Unit : MonoBehaviour
         }
         else if(isSelected)
         {
+            /*
             if (Input.GetKeyDown(KeyCode.Z) && !isReadyToAttack)
             {
                 DeleteIndicators();
                 GameBoard.Instance.isAnyoneSelected = false;
                 isSelected = false;
-            }
+            }*/
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 handleMove();
@@ -216,7 +217,12 @@ public abstract class Unit : MonoBehaviour
         newPos.z = this.transform.position.z;
         newPos.x = x;
         newPos.y = y;
-
+        if (newPos.x == 0 && !GameBoard.Instance.GameOver)
+        {
+            GameBoard.Instance.GameOver = true;
+            GameObject defeat = GameObject.Find("DefeatText");
+            defeat.renderer.enabled = true;
+        }
         //remove old location of this unit from our list, and add new one
         foreach (Vector2 loc in GameBoard.Instance.unitLocs)
         {
@@ -430,8 +436,8 @@ public abstract class Unit : MonoBehaviour
 				Unit target = CursorScript.Instance.unitUnderCursor;
 				
 				if (target.team != GameBoard.Instance.current) {
-					target.DealDamage(5);
-					this.DealDamage(2);
+					target.DealDamage(3);
+					this.DealDamage(1);
 				}
                 isSelected = false;
                 GameBoard.Instance.isAnyoneSelected = false;
@@ -462,7 +468,7 @@ public abstract class Unit : MonoBehaviour
 		tm.text = hp.ToString();
 	}
 	
-	void Die() {
+	virtual protected void Die() {
         GameBoard.Instance.unitLocs.Remove(this.gameObject.transform.position);
 		gameObject.SetActive(false);
 		owner.unitDestroyed(this);

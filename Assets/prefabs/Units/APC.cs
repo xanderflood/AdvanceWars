@@ -24,4 +24,15 @@ public class APC : Unit
     {
         return 6;
     }
+    protected override void Die()
+    {
+        if (!GameBoard.Instance.GameOver)
+        {
+            GameBoard.Instance.GameOver = true;
+            GameObject victory = GameObject.Find("VictoryText");
+            victory.renderer.enabled = true;
+        }
+        base.Die();
+
+    }
 }
