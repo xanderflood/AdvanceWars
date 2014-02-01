@@ -5,8 +5,27 @@ public class UAMScript : MonoBehaviour {
 
 	public Unit target;
 	public bool onFire;
+	public bool canFire;
 
 	public float diff;
+
+	public void turnOn(Unit u) {
+		target = u;
+		gameObject.SetActive (true);
+
+		u.makeAttackIndicators ();
+		
+		Vector3 pos = transform.FindChild ("MenuIcon").transform.position;
+
+		if (u.IndicatorList.Count == 0) {
+			pos.y -= diff;
+			canFire = false;
+		} else {
+			canFire = true;
+		}
+
+		transform.FindChild ("MenuIcon").transform.position = pos;
+	}
 
 	// Use this for initialization
 	void Start () {
@@ -17,18 +36,20 @@ public class UAMScript : MonoBehaviour {
 	void Update () {
 		Vector3 pos = transform.FindChild ("MenuIcon").transform.position;
 
-		if (Input.GetKeyDown("up") && !onFire) {
-			onFire = true;
-			pos.y += diff;
-		}
+		if (canFire) {
+			if (Input.GetKeyDown ("up") && !onFire) {
+				onFire = true;
+				pos.y += diff;
+			}
 
-		if (Input.GetKeyDown("down") && onFire) {
-			onFire = false;
-			pos.y -= diff;
+			if (Input.GetKeyDown ("down") && onFire) {
+				onFire = false;
+				pos.y -= diff;
+			}
 		}
 
 		if (Input.GetKeyDown ("space")) {
-			if (onFire) {
+			if (canFire && onFire) {
 				target.prepareToAttack();
 				gameObject.SetActive(false);
 			} else {

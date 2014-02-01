@@ -22,7 +22,7 @@ public abstract class Unit : MonoBehaviour
 	private struct PriQueueElt { public int x, y, moveDistRemaining;}
 	private List<PriQueueElt> bfsQueue = new List<PriQueueElt>();
 	
-	private List<UnityEngine.GameObject> IndicatorList = new List<UnityEngine.GameObject>();
+	public List<UnityEngine.GameObject> IndicatorList = new List<UnityEngine.GameObject>();
 
 	public bool isReadyToAttack = false;
 
@@ -126,14 +126,13 @@ public abstract class Unit : MonoBehaviour
                 //add its new location to the list of unit locations
                 GameBoard.Instance.unitLocs.Add(pos);
 
-				CursorScript.Instance.unitMenu.GetComponent<UAMScript>().target = this;
-				CursorScript.Instance.unitMenu.SetActive(true);
+				CursorScript.Instance.unitMenu.GetComponent<UAMScript>().turnOn(this);
 				return;
             }
 		}
     }
 
-	public void prepareToAttack() {
+	public void makeAttackIndicators() {
 		
 		// look to see if any enemy units are within attack range, and make attack indicators as appropriate
 		Team opponent = getOtherTeam();
@@ -147,11 +146,18 @@ public abstract class Unit : MonoBehaviour
 				Vector3 newind = loc;
 				newind.z = -2; // make sure indicators are above everything
 				UnityEngine.GameObject x = Instantiate(AttackIndicator, newind, Quaternion.identity) as GameObject;
+				x.SetActive(false);
 				IndicatorList.Add(x);
 			}
 		}
-		UnityEngine.GameObject waitIndicator = Instantiate(moveIndicator, pos, Quaternion.identity) as GameObject;
-		IndicatorList.Add(waitIndicator);
+	}
+
+	public void prepareToAttack() {
+
+		foreach (GameObject g in IndicatorList) {
+			g.SetActive(true);
+		}
+
 		isReadyToAttack = true;
 		GameBoard.Instance.someUnitAttacking = true;
 	}
