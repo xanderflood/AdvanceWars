@@ -15,7 +15,7 @@ public class Mech : Unit {
 		}
 		else ///if (terrain == TerrainType.Mountain)
 		{
-			return 2;
+			return 1;
 		}
 	}
 	
