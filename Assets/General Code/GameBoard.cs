@@ -35,7 +35,7 @@ public class GameBoard : ScriptableObject {
 	public List<Vector2> unitLocs = new List<Vector2>();
     public bool GameOver = false;
 	public TeamColor current = TeamColor.Red;
-
+    public int curlevel = 0;
 	public Team redTeam;
 	public Team blueTeam;
 	
