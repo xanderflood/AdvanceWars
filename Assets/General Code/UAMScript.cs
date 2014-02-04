@@ -30,7 +30,7 @@ public class UAMScript : MonoBehaviour {
 
 		transform.FindChild ("MenuIcon").transform.position = pos;
 		transform.FindChild ("Fire").GetComponent<SpriteRenderer> ().color = col;
-		Debug.Log (transform.FindChild ("Fire").GetComponent<SpriteRenderer> ().color.a);
+		//Debug.Log (transform.FindChild ("Fire").GetComponent<SpriteRenderer> ().color.a);
 	}
 
 	// Use this for initialization

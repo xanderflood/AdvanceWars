@@ -44,7 +44,10 @@ public abstract class Unit : MonoBehaviour
     abstract protected int GetUnitMoveCost(TerrainType terrain);
     abstract protected int GetUnitMoveRange();
 	abstract protected int GetAttack(Unit target);
-
+    public bool InMoveAnimation= false;
+    Vector2 destaion_pos; //where we are animating twards
+    Vector2 start_pos; // pos we started animatino from
+    float animationStartTime;
     // Use this for initialization
     public void Start()
     {
@@ -65,6 +68,17 @@ public abstract class Unit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (InMoveAnimation) {
+            float distCovered = (Time.time - animationStartTime) * 6;
+            float fracJourney = distCovered / Vector2.Distance(start_pos,destaion_pos);
+            transform.position =  Vector2.Lerp(start_pos, destaion_pos, fracJourney);
+            if (fracJourney > .99f) {
+                transform.position = destaion_pos;
+                InMoveAnimation = false;
+                CursorScript.Instance.unitMenu.GetComponent<UAMScript>().turnOn(this);
+            }
+            return;
+        }
         if (isReadyToAttack && Input.GetKeyDown(KeyCode.Space))
         {
             HandleAttack();
@@ -129,11 +143,16 @@ public abstract class Unit : MonoBehaviour
                 }
 
 				pos = new Vector3(CursorScript.Instance.shouldbex, CursorScript.Instance.shouldbey, 0);
-				this.transform.position = pos;
+
+                InMoveAnimation = true;
+                destaion_pos = pos;
+                start_pos = this.transform.position;
+                animationStartTime = Time.time;
+                //this.transform.position = pos;
                 //add its new location to the list of unit locations
                 GameBoard.Instance.unitLocs.Add(pos);
 
-				CursorScript.Instance.unitMenu.GetComponent<UAMScript>().turnOn(this);
+             
 				return;
             }
 		}
@@ -247,7 +266,12 @@ public abstract class Unit : MonoBehaviour
         }
         GameBoard.Instance.unitLocs.Add(newPos);
 
-        this.transform.position = newPos;
+        //setup values for animation
+        InMoveAnimation = true;
+        destaion_pos = newPos;
+        start_pos = this.transform.position;
+        animationStartTime = Time.time;
+
         DeleteIndicators();
     }
 
