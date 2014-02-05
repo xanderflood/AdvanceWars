@@ -1,15 +1,19 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
+
+public enum Direction {
+	Up,
+	Down,
+	Left,
+	Right,
+}
 
 public class moveindicatorscript : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+	public List<Direction> path;
+
+	void OnTriggerEnter2D(Collider2D other) {
+
+		CursorScript.Instance.currentIndicator = this.gameObject;
 	}
 }

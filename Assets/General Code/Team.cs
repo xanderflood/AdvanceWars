@@ -33,6 +33,7 @@ public class Team : MonoBehaviour {
 	public void endTurn() {
 		foreach (Unit u in units) {
 			u.hasMovedThisTurn = false;
+			u.menuing = false;
 		}
 	}
 

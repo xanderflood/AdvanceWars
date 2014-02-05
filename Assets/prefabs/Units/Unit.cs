@@ -22,12 +22,13 @@ public abstract class Unit : MonoBehaviour
 	public Team owner;
 	
 	// used to more or less use Dijkstra's algorithm to make movement indicators
-	private struct PriQueueElt { public int x, y, moveDistRemaining;}
+	private struct PriQueueElt { public int x, y, moveDistRemaining; public List<Direction> path; }
 	private List<PriQueueElt> bfsQueue = new List<PriQueueElt>();
 	
-	public List<UnityEngine.GameObject> IndicatorList = new List<UnityEngine.GameObject>();
+	public List<GameObject> IndicatorList = new List<GameObject>();
 
 	public bool isReadyToAttack = false;
+	public bool menuing = false;
 
 	public bool hid_hasMovedThisTurn = false;
 	public bool hasMovedThisTurn {
@@ -48,6 +49,7 @@ public abstract class Unit : MonoBehaviour
     Vector2 destaion_pos; //where we are animating twards
     Vector2 start_pos; // pos we started animatino from
     float animationStartTime;
+
     // Use this for initialization
     public void Start()
     {
@@ -76,29 +78,22 @@ public abstract class Unit : MonoBehaviour
                 transform.position = destaion_pos;
                 InMoveAnimation = false;
                 CursorScript.Instance.unitMenu.GetComponent<UAMScript>().turnOn(this);
+				menuing = true;
             }
             return;
         }
-        if (isReadyToAttack && Input.GetKeyDown(KeyCode.Space))
-        {
-            HandleAttack();
-        }
-        else if(isSelected)
-        {
-            /*
-            if (Input.GetKeyDown(KeyCode.Z) && !isReadyToAttack)
-            {
-                DeleteIndicators();
-                GameBoard.Instance.isAnyoneSelected = false;
-                isSelected = false;
-            }*/
+		if (menuing) {
+			return;
+		} else if (isReadyToAttack && Input.GetKeyDown(KeyCode.Space)) {
+			HandleAttack();
+        } else if(isSelected) {
+            
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 handleMove();
             }
-        }
-        else if (isUnderCursor)
-        {
+
+        } else if (isUnderCursor) {
             // if  it is our turn and noone else is selected, we can move
             if (Input.GetKeyDown(KeyCode.Space) && GameBoard.Instance.isAnyoneSelected == false
 			    && team == GameBoard.Instance.current && !hasMovedThisTurn)
@@ -124,6 +119,33 @@ public abstract class Unit : MonoBehaviour
         if (!CursorScript.Instance.canmove) {
             return;
         }
+
+		DeleteIndicators();
+		Vector3 pos = this.transform.position;
+
+		//we are moving the unit, so remove it's old location from the list
+		foreach (Vector2 loc in GameBoard.Instance.unitLocs)
+		{
+			if (Vector2.Distance(pos, loc) < .3f)
+			{
+				GameBoard.Instance.unitLocs.Remove(loc);
+				break;
+			}
+		}
+		
+		pos = new Vector3(CursorScript.Instance.shouldbex, CursorScript.Instance.shouldbey, 0);
+		
+		InMoveAnimation = true;
+		destaion_pos = pos;
+		start_pos = this.transform.position;
+		animationStartTime = Time.time;
+
+		//add its new location to the list of unit locations
+		GameBoard.Instance.unitLocs.Add(pos);
+		
+		return;
+
+		/*
         foreach (GameObject tmp in IndicatorList)
         {
             if (Vector2.Distance(tmp.transform.position, cursorLoc.position) < .3f)
@@ -151,11 +173,11 @@ public abstract class Unit : MonoBehaviour
                 //this.transform.position = pos;
                 //add its new location to the list of unit locations
                 GameBoard.Instance.unitLocs.Add(pos);
-
              
 				return;
             }
 		}
+		*/
     }
 
 	public void makeAttackIndicators() {
@@ -205,21 +227,30 @@ public abstract class Unit : MonoBehaviour
         // add go nowhere indicator
         UnityEngine.GameObject x = Instantiate(moveIndicator, this.transform.position, Quaternion.identity) as GameObject;
         IndicatorList.Add(x);
+		CursorScript.Instance.currentIndicator = x;
 
         //add 4 adjancent squares to our queue
         PriQueueElt queueElt;
         queueElt.moveDistRemaining = GetUnitMoveRange();
         queueElt.x = xpos + 1;
-        queueElt.y = ypos;
+		queueElt.y = ypos;
+		queueElt.path = new List<Direction> ();
+		queueElt.path.Add (Direction.Right);
         bfsQueue.Add(queueElt);
         queueElt.x = xpos - 1;
-        queueElt.y = ypos;
+		queueElt.y = ypos;
+		queueElt.path = new List<Direction> ();
+		queueElt.path.Add (Direction.Left);
         bfsQueue.Add(queueElt);
         queueElt.x = xpos;
-        queueElt.y = ypos + 1;
+		queueElt.y = ypos + 1;
+		queueElt.path = new List<Direction> ();
+		queueElt.path.Add (Direction.Up);
         bfsQueue.Add(queueElt);
         queueElt.x = xpos;
-        queueElt.y = ypos - 1;
+		queueElt.y = ypos - 1;
+		queueElt.path = new List<Direction> ();
+		queueElt.path.Add (Direction.Down);
         bfsQueue.Add(queueElt);
 
 
@@ -289,7 +320,7 @@ public abstract class Unit : MonoBehaviour
         return opponent;
     }
 
-    void makeMoveIndicatorsRecursive(int movedist, int xloc, int yloc)
+    void makeMoveIndicatorsRecursive(int movedist, int xloc, int yloc, List<Direction> path)
     {
         
         // first check if we are trying to move off the map. if so return;
@@ -304,18 +335,6 @@ public abstract class Unit : MonoBehaviour
             callNextBFS();
             return;
         }
-        //Debug.Log(movecost);
-        // fix the movecots to thir correct values. abstract this away eventually, todo
-        /*
-        if (movecost == 2)
-        {
-            movecost = 1;
-        }
-        else if (movecost == 3)
-        {
-            movecost = 2;
-        }
-        */
 
         int movecost = GetUnitMoveCost(terrain);
      
@@ -373,6 +392,7 @@ public abstract class Unit : MonoBehaviour
         if (!occupied)
         {
             UnityEngine.GameObject x = Instantiate(moveIndicator, pos, Quaternion.identity) as GameObject;
+			x.GetComponent<moveindicatorscript>().path = path;
             IndicatorList.Add(x);
         }
 
@@ -383,18 +403,26 @@ public abstract class Unit : MonoBehaviour
         //add move right to queue
         queueElt.x = xloc +1;
         queueElt.y = yloc;
+		queueElt.path = new List<Direction> (path);
+		queueElt.path.Add (Direction.Right);
         bfsQueue.Add(queueElt);
         //add move left to queue
-        queueElt.x = xloc - 1;
-        queueElt.y = yloc;
+        queueElt.x = xloc - 1; 
+		queueElt.y = yloc;
+		queueElt.path = new List<Direction> (path);
+		queueElt.path.Add (Direction.Left);
         bfsQueue.Add(queueElt);
         //add move up to queue
         queueElt.x = xloc;
-        queueElt.y = yloc+1;
+		queueElt.y = yloc+1;
+		queueElt.path = new List<Direction> (path);
+		queueElt.path.Add (Direction.Up);
         bfsQueue.Add(queueElt);
         //add move down to queue
         queueElt.x = xloc;
-        queueElt.y = yloc -1 ;
+		queueElt.y = yloc -1 ;
+		queueElt.path = new List<Direction> (path);
+		queueElt.path.Add (Direction.Down);
         bfsQueue.Add(queueElt);
 
         bfsQueue.Sort(new queueSort());
@@ -427,7 +455,7 @@ public abstract class Unit : MonoBehaviour
 
         PriQueueElt queueElt = bfsQueue[0];
         bfsQueue.RemoveAt(0);
-        makeMoveIndicatorsRecursive(queueElt.moveDistRemaining, queueElt.x, queueElt.y);    
+        makeMoveIndicatorsRecursive(queueElt.moveDistRemaining, queueElt.x, queueElt.y, queueElt.path);    
     }
 
     // cleans up any movement or attack indicators we have made
@@ -456,6 +484,7 @@ public abstract class Unit : MonoBehaviour
 	
 	void OnTriggerEnter2D(Collider2D other)
 	{
+
 		CursorScript.Instance.unitUnderCursor = this;
 		isUnderCursor = true;
 	}

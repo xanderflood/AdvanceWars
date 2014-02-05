@@ -23,6 +23,7 @@ public class CursorScript : MonoBehaviour {
 	public int shouldbex = 0, shouldbey = 0;
 
 	public GameObject unitMenu;
+	public GameObject currentIndicator;
 	
 	void Update()
 	{
