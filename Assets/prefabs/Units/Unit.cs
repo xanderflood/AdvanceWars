@@ -8,44 +8,47 @@ public abstract class Unit : MonoBehaviour
 {
     //xander, why do we need these, just use transform.position. no need to keep track of the info twice
     public int x, y;
-    public bool isSelected , lookingAtEnemyIndicators;
+    public bool isSelected, lookingAtEnemyIndicators;
     public bool isUnderCursor = false;
     public Transform cursorLoc;
     public UnityEngine.Object moveIndicator;
     public UnityEngine.Object AttackIndicator;
     public TeamColor team;
     public UnitType type;
-	public int hp = 10;
+    public int hp = 10;
 
-	public bool isVehicle = false;
-	
-	public Team owner;
-	
-	// used to more or less use Dijkstra's algorithm to make movement indicators
-	private struct PriQueueElt { public int x, y, moveDistRemaining; public List<Direction> path; }
-	private List<PriQueueElt> bfsQueue = new List<PriQueueElt>();
-	
-	public List<GameObject> IndicatorList = new List<GameObject>();
+    public bool isVehicle = false;
 
-	public bool isReadyToAttack = false;
-	public bool menuing = false;
+    public Team owner;
 
-	public bool hid_hasMovedThisTurn = false;
-	public bool hasMovedThisTurn {
-		set {
-			hid_hasMovedThisTurn = value;
+    // used to more or less use Dijkstra's algorithm to make movement indicators
+    private struct PriQueueElt { public int x, y, moveDistRemaining; public List<Direction> path; }
+    private List<PriQueueElt> bfsQueue = new List<PriQueueElt>();
 
-			gameObject.transform.Find("MovedIndicator").gameObject.SetActive(value);
-		}
-		get {
-			return hid_hasMovedThisTurn;
-		}
-	}
+    public List<GameObject> IndicatorList = new List<GameObject>();
+
+    public bool isReadyToAttack = false;
+    public bool menuing = false;
+
+    public bool hid_hasMovedThisTurn = false;
+    public bool hasMovedThisTurn
+    {
+        set
+        {
+            hid_hasMovedThisTurn = value;
+
+            gameObject.transform.Find("MovedIndicator").gameObject.SetActive(value);
+        }
+        get
+        {
+            return hid_hasMovedThisTurn;
+        }
+    }
 
     abstract protected int GetUnitMoveCost(TerrainType terrain);
     abstract protected int GetUnitMoveRange();
-	abstract protected int GetAttack(Unit target);
-    public bool InMoveAnimation= false;
+    abstract protected int GetAttack(Unit target);
+    public bool InMoveAnimation = false;
     Vector2 destaion_pos; //where we are animating twards
     Vector2 start_pos; // pos we started animatino from
     float animationStartTime;
@@ -65,48 +68,62 @@ public abstract class Unit : MonoBehaviour
         x = (int)transform.position.x;
         y = (int)transform.position.y;
         GameBoard.Instance.unitLocs.Add(transform.position);
-	}
+    }
 
     // Update is called once per frame
     void Update()
     {
-        if (InMoveAnimation) {
+        if (InMoveAnimation)
+        {
             float distCovered = (Time.time - animationStartTime) * 6;
-            float fracJourney = distCovered / Vector2.Distance(start_pos,destaion_pos);
-            transform.position =  Vector2.Lerp(start_pos, destaion_pos, fracJourney);
-            if (fracJourney > .99f) {
+            float fracJourney = distCovered / Vector2.Distance(start_pos, destaion_pos);
+            transform.position = Vector2.Lerp(start_pos, destaion_pos, fracJourney);
+            if (fracJourney > .99f)
+            {
                 transform.position = destaion_pos;
                 InMoveAnimation = false;
                 CursorScript.Instance.unitMenu.GetComponent<UAMScript>().turnOn(this);
-				menuing = true;
+                menuing = true;
             }
             return;
         }
-		if (menuing) {
-			return;
-		} else if (isReadyToAttack && Input.GetKeyDown(KeyCode.Space)) {
-			HandleAttack();
-        } else if(isSelected) {
-            
-            if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.X) && Input.GetKeyDown(KeyCode.Z)) { return; }// prevent dumb bugs if they hit go and stop at the same time
+
+        if (Input.GetKeyDown(KeyCode.X))
+        { // cancel whatever we are doing
+            CancelActionIfApplicable();
+            return;
+        }
+        if (menuing)
+        {
+            return;
+        }
+        else if (isReadyToAttack && Input.GetKeyDown(KeyCode.Z))
+        {
+            HandleAttack();
+        }
+        else if (isSelected)
+        {
+            if (Input.GetKeyDown(KeyCode.Z))
             {
                 handleMove();
             }
-
-        } else if (isUnderCursor) {
+        }
+        else if (isUnderCursor)
+        {
             // if  it is our turn and noone else is selected, we can move
-            if (Input.GetKeyDown(KeyCode.Space) && GameBoard.Instance.isAnyoneSelected == false
-			    && team == GameBoard.Instance.current && !hasMovedThisTurn)
+            if (Input.GetKeyDown(KeyCode.Z) && GameBoard.Instance.isAnyoneSelected == false
+                && team == GameBoard.Instance.current && !hasMovedThisTurn)
             {
                 GameBoard.Instance.isAnyoneSelected = true;
                 isSelected = true;
                 makeMoveIndicators();
 
-				GameBoard.Instance.someUnitActive = true;
+                GameBoard.Instance.someUnitActive = true;
             }
             //if its not our turn, we can still look at their movement range, but only make things once
             else if (Input.GetKeyDown(KeyCode.C) && !lookingAtEnemyIndicators
-			         && !GameBoard.Instance.isAnyoneSelected  && team != GameBoard.Instance.current)
+                     && !GameBoard.Instance.isAnyoneSelected && team != GameBoard.Instance.current)
             {
                 lookingAtEnemyIndicators = true;
                 makeMoveIndicators();
@@ -114,38 +131,101 @@ public abstract class Unit : MonoBehaviour
         }
     }
 
-    void handleMove() {
-        // awful code that checks if the curser is over one of the range indacators we made, 
-        if (!CursorScript.Instance.canmove) {
+    void CancelActionIfApplicable() {
+        if (isReadyToAttack) { // clean up attack inidcators and re-open the menu
+            GameBoard.Instance.someUnitAttacking = false;
+            isReadyToAttack = false;
+            menuing = true;
+            DeleteIndicators();
+            //disable the cursor because we are in a menu, allso make sure that we are not displaying the attack cursor
+            CursorScript.Instance.gameObject.SetActive(false);
+            CursorScript.Instance.cursorsr.gameObject.SetActive(true);
+            CursorScript.Instance.crosshsr.gameObject.SetActive(false);
+
+            //open menu back up
+            CursorScript.Instance.unitMenu.GetComponent<UAMScript>().turnOn(this);
+        }
+
+
+        else if (menuing) // if in menu get out of menu, make unit still selected in his old position
+        {
+            //remove moved location from unit locations
+            foreach (Vector2 loc in GameBoard.Instance.unitLocs)
+            {
+                if (Vector2.Distance(this.transform.position, loc) < .3f)
+                {
+                    GameBoard.Instance.unitLocs.Remove(loc);
+                    break;
+                }
+            }
+            this.transform.position = start_pos;
+            GameBoard.Instance.unitLocs.Add(this.transform.position);
+            menuing = false;
+            CursorScript.Instance.unitMenu.GetComponent<UAMScript>().fixpos();
+            CursorScript.Instance.unitMenu.GetComponent<UAMScript>().gameObject.SetActive(false);
+            makeMoveIndicators();
+
+            CursorScript.Instance.gameObject.SetActive(true);
+        }
+        else if (isSelected) // if we are looking at move indicators for this unit
+        {
+            isSelected = false;
+            DeleteIndicators();
+            GameBoard.Instance.isAnyoneSelected = false;
+            GameBoard.Instance.someUnitActive = false;
+        }
+    }
+
+    void handleMove()
+    {
+        //first, make sure the cursor is within the units movement rage!
+        bool IsCursorOverMoveIndicator = false;
+        foreach (GameObject tmp in IndicatorList)
+        {
+            if (Vector2.Distance(tmp.transform.position, cursorLoc.position) < .3f)
+            {
+                IsCursorOverMoveIndicator = true;
+                break;
+            }
+        }
+        if (!IsCursorOverMoveIndicator)
+        {
             return;
         }
 
-		DeleteIndicators();
-		Vector3 pos = this.transform.position;
+        // if the cursor is currently in motion, dont allow units to move, 
+        //this stops the bug where we check if a location is valid to move to, then the cursor moves, then we move the unit to that location
+        if (!CursorScript.Instance.canmove)
+        {
+            return;
+        }
+        DeleteIndicators();
+        Vector3 pos = this.transform.position;
 
-		//we are moving the unit, so remove it's old location from the list
-		foreach (Vector2 loc in GameBoard.Instance.unitLocs)
-		{
-			if (Vector2.Distance(pos, loc) < .3f)
-			{
-				GameBoard.Instance.unitLocs.Remove(loc);
-				break;
-			}
-		}
-		
-		pos = new Vector3(CursorScript.Instance.shouldbex, CursorScript.Instance.shouldbey, 0);
-		
-		InMoveAnimation = true;
-		destaion_pos = pos;
-		start_pos = this.transform.position;
-		animationStartTime = Time.time;
+        //we are moving the unit, so remove it's old location from the list
+        foreach (Vector2 loc in GameBoard.Instance.unitLocs)
+        {
+            if (Vector2.Distance(pos, loc) < .3f)
+            {
+                GameBoard.Instance.unitLocs.Remove(loc);
+                break;
+            }
+        }
 
-		//add its new location to the list of unit locations
-		GameBoard.Instance.unitLocs.Add(pos);
-		
-		return;
+        CursorScript.Instance.gameObject.SetActive(false);
+        pos = new Vector3(CursorScript.Instance.shouldbex, CursorScript.Instance.shouldbey, 0);
 
-		/*
+        InMoveAnimation = true;
+        destaion_pos = pos;
+        start_pos = this.transform.position;
+        animationStartTime = Time.time;
+
+        //add its new location to the list of unit locations
+        GameBoard.Instance.unitLocs.Add(pos);
+
+        return;
+
+        /*
         foreach (GameObject tmp in IndicatorList)
         {
             if (Vector2.Distance(tmp.transform.position, cursorLoc.position) < .3f)
@@ -164,7 +244,7 @@ public abstract class Unit : MonoBehaviour
                     }
                 }
 
-				pos = new Vector3(CursorScript.Instance.shouldbex, CursorScript.Instance.shouldbey, 0);
+                pos = new Vector3(CursorScript.Instance.shouldbex, CursorScript.Instance.shouldbey, 0);
 
                 InMoveAnimation = true;
                 destaion_pos = pos;
@@ -174,41 +254,44 @@ public abstract class Unit : MonoBehaviour
                 //add its new location to the list of unit locations
                 GameBoard.Instance.unitLocs.Add(pos);
              
-				return;
+                return;
             }
-		}
-		*/
+        }
+        */
     }
 
-	public void makeAttackIndicators() {
-		
-		// look to see if any enemy units are within attack range, and make attack indicators as appropriate
-		Team opponent = getOtherTeam();
-		Vector2 pos = gameObject.transform.position;
-		//  foreach (Vector2 loc in GameBoard.Instance.unitLocs)
-		foreach (Unit u in opponent.units)
-		{
-			Vector2 loc = u.gameObject.transform.position;
-			if (Vector2.Distance(pos, loc) < 1.2 && Vector2.Distance(pos, loc) > .3)
-			{ // less than sqrt2, but not on the same square
-				Vector3 newind = loc;
-				newind.z = -2; // make sure indicators are above everything
-				UnityEngine.GameObject x = Instantiate(AttackIndicator, newind, Quaternion.identity) as GameObject;
-				x.SetActive(false);
-				IndicatorList.Add(x);
-			}
-		}
-	}
+    public void makeAttackIndicators()
+    {
 
-	public void prepareToAttack() {
+        // look to see if any enemy units are within attack range, and make attack indicators as appropriate
+        Team opponent = getOtherTeam();
+        Vector2 pos = gameObject.transform.position;
+        //  foreach (Vector2 loc in GameBoard.Instance.unitLocs)
+        foreach (Unit u in opponent.units)
+        {
+            Vector2 loc = u.gameObject.transform.position;
+            if (Vector2.Distance(pos, loc) < 1.2 && Vector2.Distance(pos, loc) > .3)
+            { // less than sqrt2, but not on the same square
+                Vector3 newind = loc;
+                newind.z = -2; // make sure indicators are above everything
+                UnityEngine.GameObject x = Instantiate(AttackIndicator, newind, Quaternion.identity) as GameObject;
+                x.SetActive(false);
+                IndicatorList.Add(x);
+            }
+        }
+    }
 
-		foreach (GameObject g in IndicatorList) {
-			g.SetActive(true);
-		}
+    public void prepareToAttack()
+    {
 
-		isReadyToAttack = true;
-		GameBoard.Instance.someUnitAttacking = true;
-	}
+        foreach (GameObject g in IndicatorList)
+        {
+            g.SetActive(true);
+        }
+
+        isReadyToAttack = true;
+        GameBoard.Instance.someUnitAttacking = true;
+    }
 
     void makeMoveIndicators()
     {
@@ -227,37 +310,38 @@ public abstract class Unit : MonoBehaviour
         // add go nowhere indicator
         UnityEngine.GameObject x = Instantiate(moveIndicator, this.transform.position, Quaternion.identity) as GameObject;
         IndicatorList.Add(x);
-		CursorScript.Instance.currentIndicator = x;
+        CursorScript.Instance.currentIndicator = x;
 
         //add 4 adjancent squares to our queue
         PriQueueElt queueElt;
         queueElt.moveDistRemaining = GetUnitMoveRange();
         queueElt.x = xpos + 1;
-		queueElt.y = ypos;
-		queueElt.path = new List<Direction> ();
-		queueElt.path.Add (Direction.Right);
+        queueElt.y = ypos;
+        queueElt.path = new List<Direction>();
+        queueElt.path.Add(Direction.Right);
         bfsQueue.Add(queueElt);
         queueElt.x = xpos - 1;
-		queueElt.y = ypos;
-		queueElt.path = new List<Direction> ();
-		queueElt.path.Add (Direction.Left);
+        queueElt.y = ypos;
+        queueElt.path = new List<Direction>();
+        queueElt.path.Add(Direction.Left);
         bfsQueue.Add(queueElt);
         queueElt.x = xpos;
-		queueElt.y = ypos + 1;
-		queueElt.path = new List<Direction> ();
-		queueElt.path.Add (Direction.Up);
+        queueElt.y = ypos + 1;
+        queueElt.path = new List<Direction>();
+        queueElt.path.Add(Direction.Up);
         bfsQueue.Add(queueElt);
         queueElt.x = xpos;
-		queueElt.y = ypos - 1;
-		queueElt.path = new List<Direction> ();
-		queueElt.path.Add (Direction.Down);
+        queueElt.y = ypos - 1;
+        queueElt.path = new List<Direction>();
+        queueElt.path.Add(Direction.Down);
         bfsQueue.Add(queueElt);
 
 
         callNextBFS(); // start make_move_indicators_recursive
     }
     //moves unit as far left as legally allowed, called by AI team
-    public void moveLeft() {
+    public void moveLeft()
+    {
         //Debug.Log("unit movin left");
         makeMoveIndicators();
         // x and y values for the current furthest left movement indicator
@@ -265,11 +349,13 @@ public abstract class Unit : MonoBehaviour
         int y = 1000;
         foreach (UnityEngine.GameObject indicator in IndicatorList)
         {
-            if (indicator.transform.position.x < x) {
+            if (indicator.transform.position.x < x)
+            {
                 x = (int)Math.Round(indicator.transform.position.x);
                 y = (int)Math.Round(indicator.transform.position.y);
             }
-            else if (indicator.transform.position.x == x && indicator.transform.position.y > y) {
+            else if (indicator.transform.position.x == x && indicator.transform.position.y > y)
+            {
                 x = (int)Math.Round(indicator.transform.position.x);
                 y = (int)Math.Round(indicator.transform.position.y);
             }
@@ -322,7 +408,7 @@ public abstract class Unit : MonoBehaviour
 
     void makeMoveIndicatorsRecursive(int movedist, int xloc, int yloc, List<Direction> path)
     {
-        
+
         // first check if we are trying to move off the map. if so return;
         TerrainType terrain;
         try
@@ -337,9 +423,9 @@ public abstract class Unit : MonoBehaviour
         }
 
         int movecost = GetUnitMoveCost(terrain);
-     
+
         // next return if we are out of movement range
-        if (movedist  - movecost < 0)
+        if (movedist - movecost < 0)
         {
             callNextBFS();
             return;
@@ -349,14 +435,14 @@ public abstract class Unit : MonoBehaviour
 
         bool occupied = false;
         foreach (GameObject tmp in IndicatorList)
-        { 
+        {
             if (Vector2.Distance(tmp.transform.position, pos) < .3f)
             {
                 callNextBFS();
-                return;              
+                return;
             }
         }
-         // check to see if there is a unit of the other team in the way, in that case dont move though them
+        // check to see if there is a unit of the other team in the way, in that case dont move though them
         Team opponent = getOtherTeam();
         foreach (Unit u in opponent.units)
         {
@@ -364,7 +450,7 @@ public abstract class Unit : MonoBehaviour
             if (Vector2.Distance(pos, loc) < .2f)
             {
                 callNextBFS();
-                return;              
+                return;
 
             }
         }
@@ -379,20 +465,20 @@ public abstract class Unit : MonoBehaviour
             }
         }
 
-        
+
         // this is the most ghetto assert ever. I'm sorry. fix it later
-        if (xloc < 0 || yloc <0)
+        if (xloc < 0 || yloc < 0)
         {
             Debug.Log("oh god da fuck is happenin");
             int zero = 0;
             int error = 1 / zero;
         }
 
-        
+
         if (!occupied)
         {
             UnityEngine.GameObject x = Instantiate(moveIndicator, pos, Quaternion.identity) as GameObject;
-			x.GetComponent<moveindicatorscript>().path = path;
+            x.GetComponent<moveindicatorscript>().path = path;
             IndicatorList.Add(x);
         }
 
@@ -401,28 +487,28 @@ public abstract class Unit : MonoBehaviour
         PriQueueElt queueElt;
         queueElt.moveDistRemaining = movementRemaining;
         //add move right to queue
-        queueElt.x = xloc +1;
+        queueElt.x = xloc + 1;
         queueElt.y = yloc;
-		queueElt.path = new List<Direction> (path);
-		queueElt.path.Add (Direction.Right);
+        queueElt.path = new List<Direction>(path);
+        queueElt.path.Add(Direction.Right);
         bfsQueue.Add(queueElt);
         //add move left to queue
-        queueElt.x = xloc - 1; 
-		queueElt.y = yloc;
-		queueElt.path = new List<Direction> (path);
-		queueElt.path.Add (Direction.Left);
+        queueElt.x = xloc - 1;
+        queueElt.y = yloc;
+        queueElt.path = new List<Direction>(path);
+        queueElt.path.Add(Direction.Left);
         bfsQueue.Add(queueElt);
         //add move up to queue
         queueElt.x = xloc;
-		queueElt.y = yloc+1;
-		queueElt.path = new List<Direction> (path);
-		queueElt.path.Add (Direction.Up);
+        queueElt.y = yloc + 1;
+        queueElt.path = new List<Direction>(path);
+        queueElt.path.Add(Direction.Up);
         bfsQueue.Add(queueElt);
         //add move down to queue
         queueElt.x = xloc;
-		queueElt.y = yloc -1 ;
-		queueElt.path = new List<Direction> (path);
-		queueElt.path.Add (Direction.Down);
+        queueElt.y = yloc - 1;
+        queueElt.path = new List<Direction>(path);
+        queueElt.path.Add(Direction.Down);
         bfsQueue.Add(queueElt);
 
         bfsQueue.Sort(new queueSort());
@@ -439,7 +525,8 @@ public abstract class Unit : MonoBehaviour
             {
                 return -1;
             }
-            else if (c1.moveDistRemaining > c2.moveDistRemaining) {
+            else if (c1.moveDistRemaining > c2.moveDistRemaining)
+            {
                 return 0;
             }
             return 1;
@@ -447,15 +534,17 @@ public abstract class Unit : MonoBehaviour
     }
 
     // calls the next element in our ghetto priority queue,  used only to make movement indicators
-    private void callNextBFS(){
-        if(bfsQueue.Count == 0){
+    private void callNextBFS()
+    {
+        if (bfsQueue.Count == 0)
+        {
 
             return;
         }
 
         PriQueueElt queueElt = bfsQueue[0];
         bfsQueue.RemoveAt(0);
-        makeMoveIndicatorsRecursive(queueElt.moveDistRemaining, queueElt.x, queueElt.y, queueElt.path);    
+        makeMoveIndicatorsRecursive(queueElt.moveDistRemaining, queueElt.x, queueElt.y, queueElt.path);
     }
 
     // cleans up any movement or attack indicators we have made
@@ -466,77 +555,82 @@ public abstract class Unit : MonoBehaviour
             Destroy(x);
         }
         IndicatorList.Clear();
-	}
-	
-	void OnTriggerExit2D(Collider2D other)
-	{
-		if (CursorScript.Instance.unitUnderCursor == this) {
-			CursorScript.Instance.unitUnderCursor = null;
-		}
-		isUnderCursor = false;
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (CursorScript.Instance.unitUnderCursor == this)
+        {
+            CursorScript.Instance.unitUnderCursor = null;
+        }
+        isUnderCursor = false;
 
         // if we are currently looking at an opponetns rage, remove that data as soon as we stop hoving the cursor
-        if (lookingAtEnemyIndicators) {
+        if (lookingAtEnemyIndicators)
+        {
             DeleteIndicators();
             lookingAtEnemyIndicators = false;
         }
-	}
-	
-	void OnTriggerEnter2D(Collider2D other)
-	{
+    }
 
-		CursorScript.Instance.unitUnderCursor = this;
-		isUnderCursor = true;
-	}
-	
-	void HandleAttack()
-	{
-		//make sure that we are close to one of the indicators
-		foreach (GameObject tmp in IndicatorList)
-		{
-			if (Vector2.Distance(tmp.transform.position, cursorLoc.position) < .3f)
-			{
-				//here is where we check if we are attacking and attack if needed, otherwise juse end turn
-				DeleteIndicators();
-				
-				Unit target = CursorScript.Instance.unitUnderCursor;
-				
-				if (target.team != GameBoard.Instance.current) {
-					target.DealDamage(this.GetAttack(target));
-					this.DealDamage(target.GetAttack(this));
-				}
+    void OnTriggerEnter2D(Collider2D other)
+    {
+
+        CursorScript.Instance.unitUnderCursor = this;
+        isUnderCursor = true;
+    }
+
+    void HandleAttack()
+    {
+        //make sure that we are close to one of the indicators
+        foreach (GameObject tmp in IndicatorList)
+        {
+            if (Vector2.Distance(tmp.transform.position, cursorLoc.position) < .3f)
+            {
+                //here is where we check if we are attacking and attack if needed, otherwise juse end turn
+                DeleteIndicators();
+
+                Unit target = CursorScript.Instance.unitUnderCursor;
+
+                if (target.team != GameBoard.Instance.current)
+                {
+                    target.DealDamage(this.GetAttack(target));
+                    this.DealDamage(target.GetAttack(this));
+                }
                 isSelected = false;
                 GameBoard.Instance.isAnyoneSelected = false;
-				GameBoard.Instance.someUnitAttacking = false;
-				isReadyToAttack = false;
-				
-				GameBoard.Instance.someUnitActive = false;
+                GameBoard.Instance.someUnitAttacking = false;
+                isReadyToAttack = false;
 
-				hasMovedThisTurn = true;
-				//Debug.Log(owner);
-				owner.unitMoved();
+                GameBoard.Instance.someUnitActive = false;
 
-				CursorScript.Instance.cursorsr.gameObject.SetActive(true);
-				CursorScript.Instance.crosshsr.gameObject.SetActive(false);
-				break;
-			}
-		}
-	}
-	
-	void DealDamage(int dmg) {
-		
-		hp -= dmg;
-		
-		if (hp <= 0)
-			Die ();
-		
-		TextMesh tm = (TextMesh)transform.Find ("HP Display").GetComponent(typeof(TextMesh));
-		tm.text = hp.ToString();
-	}
-	
-	virtual protected void Die() {
+                hasMovedThisTurn = true;
+                //Debug.Log(owner);
+                owner.unitMoved();
+
+                CursorScript.Instance.cursorsr.gameObject.SetActive(true);
+                CursorScript.Instance.crosshsr.gameObject.SetActive(false);
+                break;
+            }
+        }
+    }
+
+    void DealDamage(int dmg)
+    {
+
+        hp -= dmg;
+
+        if (hp <= 0)
+            Die();
+
+        TextMesh tm = (TextMesh)transform.Find("HP Display").GetComponent(typeof(TextMesh));
+        tm.text = hp.ToString();
+    }
+
+    virtual protected void Die()
+    {
         GameBoard.Instance.unitLocs.Remove(this.gameObject.transform.position);
-		gameObject.SetActive(false);
-		owner.unitDestroyed(this);
-	}
+        gameObject.SetActive(false);
+        owner.unitDestroyed(this);
+    }
 }

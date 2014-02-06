@@ -37,7 +37,7 @@ public class GameSystemControl : MonoBehaviour {
 	void Update () {
 
 		// Check whether turn ended
-		if (Input.GetKeyDown (KeyCode.X)) {
+		if (Input.GetKeyDown (KeyCode.W)) {
 			GameBoard.Instance.changeTeam();
 		}
         if (Input.GetKeyDown(KeyCode.Q))

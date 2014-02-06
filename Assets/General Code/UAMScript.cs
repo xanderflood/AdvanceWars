@@ -12,7 +12,7 @@ public class UAMScript : MonoBehaviour {
 	public void turnOn(Unit u) {
 		target = u;
 		gameObject.SetActive (true);
-
+        
 		u.makeAttackIndicators ();
 		
 		Vector3 pos = transform.FindChild ("MenuIcon").transform.position;
@@ -21,16 +21,17 @@ public class UAMScript : MonoBehaviour {
 		if (u.IndicatorList.Count == 0) {
 			pos.y -= diff;
 			canFire = false;
+            onFire = false;
 			col.a = 50;
 
 		} else {
 			canFire = true;
+            onFire = true;
 			col.a = 255;
 		}
 
 		transform.FindChild ("MenuIcon").transform.position = pos;
 		transform.FindChild ("Fire").GetComponent<SpriteRenderer> ().color = col;
-		//Debug.Log (transform.FindChild ("Fire").GetComponent<SpriteRenderer> ().color.a);
 	}
 
 	// Use this for initialization
@@ -54,7 +55,7 @@ public class UAMScript : MonoBehaviour {
 			}
 		}
 
-		if (Input.GetKeyDown ("space")) {
+		if (Input.GetKeyDown (KeyCode.Z)) {
 			if (canFire && onFire) {
 				target.prepareToAttack();
 				gameObject.SetActive(false);
@@ -71,8 +72,22 @@ public class UAMScript : MonoBehaviour {
 				pos.y += diff;
 				onFire = true;
 			}
+            //clean up some state
+            target.menuing = false;
+            CursorScript.Instance.gameObject.SetActive(true);
 		}
 
 		transform.FindChild ("MenuIcon").transform.position = pos;
 	}
+
+    public void fixpos()
+    {
+        if (!onFire) {
+            Vector3 pos = transform.FindChild("MenuIcon").transform.position;
+            pos.y += diff;
+            transform.FindChild("MenuIcon").transform.position = pos;
+        }
+    }
+
 }
+
