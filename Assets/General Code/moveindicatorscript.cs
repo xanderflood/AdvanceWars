@@ -11,7 +11,10 @@ public enum Direction {
 public class moveindicatorscript : MonoBehaviour {
 	
 	public List<Direction> path;
-	public GameObject moveArrow;
+	public GameObject rightArrow;
+	public GameObject upArrow;
+	public GameObject downArrow;
+	public GameObject leftArrow;
 	
 	static List<GameObject> drawn = new List<GameObject>();
 	
@@ -19,7 +22,7 @@ public class moveindicatorscript : MonoBehaviour {
 		
 		CursorScript.Instance.currentIndicator = this.gameObject;
 		
-		drawPath (path, Unit.currentSelectedUnit.transform.position);//Unit.currentSelected.transform.position);
+		drawPath (path, Unit.currentSelectedUnit.transform.position);
 	}
 	
 	void OnTriggerExit2D(Collider2D other) {
@@ -41,26 +44,27 @@ public class moveindicatorscript : MonoBehaviour {
 		
 		GameObject tmp = null;
 		foreach (Direction d in path) {
-			
+
+			Quaternion rot;
 			switch(d) {
 			case Direction.Right:
 				pos.x += 0.5f;
-				tmp = (GameObject)Instantiate(moveArrow, pos, new Quaternion(0,0,0,0));
+				tmp = (GameObject)Instantiate(rightArrow, pos, Quaternion.identity);
 				pos.x += 0.5f;
 				break;
 			case Direction.Left:
 				pos.x -= 0.5f;
-				tmp = (GameObject)Instantiate(moveArrow, pos, new Quaternion(0,0,180,0));
+				tmp = (GameObject)Instantiate(leftArrow, pos, Quaternion.identity);
 				pos.x -= 0.5f;
 				break;
 			case Direction.Up:
 				pos.y += 0.5f;
-				tmp = (GameObject)Instantiate(moveArrow, pos, new Quaternion(0,0,90,0));
+				tmp = (GameObject)Instantiate(upArrow, pos, Quaternion.identity);
 				pos.y += 0.5f;
 				break;
 			case Direction.Down:
 				pos.y -= 0.5f;
-				tmp = (GameObject)Instantiate(moveArrow, pos, new Quaternion(0,0,-90,0));
+				tmp = (GameObject)Instantiate(downArrow, pos, Quaternion.identity);
 				pos.y -= 0.5f;
 				break;
 			}
