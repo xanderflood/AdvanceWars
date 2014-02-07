@@ -27,6 +27,8 @@ public abstract class Unit : MonoBehaviour
 
     public List<GameObject> IndicatorList = new List<GameObject>();
 
+	public static Unit currentSelectedUnit;
+
     public bool isReadyToAttack = false;
     public bool menuing = false;
 
@@ -135,6 +137,7 @@ public abstract class Unit : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Z) && GameBoard.Instance.isAnyoneSelected == false
                 && team == GameBoard.Instance.current && !hasMovedThisTurn)
             {
+				currentSelectedUnit = this;
                 GameBoard.Instance.isAnyoneSelected = true;
                 isSelected = true;
                 makeMoveIndicators();

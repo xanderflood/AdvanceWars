@@ -19,7 +19,7 @@ public class moveindicatorscript : MonoBehaviour {
 		
 		CursorScript.Instance.currentIndicator = this.gameObject;
 		
-		drawPath (path, Vector3.zero);//Unit.currentSelected.transform.position);
+		drawPath (path, Unit.currentSelectedUnit.transform.position);//Unit.currentSelected.transform.position);
 	}
 	
 	void OnTriggerExit2D(Collider2D other) {
