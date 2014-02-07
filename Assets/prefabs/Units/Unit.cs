@@ -364,33 +364,45 @@ public abstract class Unit : MonoBehaviour
 
         callNextBFS(); // start make_move_indicators_recursive
     }
-    //moves unit as far left as legally allowed, called by AI team
-    public void moveLeft()
-    {
-        //Debug.Log("unit movin left");
-        makeMoveIndicators();
-        // x and y values for the current furthest left movement indicator
-        int x = 1000;
-        int y = 1000;
+
+    public GameObject findLeftMoveIndicator() {
+
+        GameObject leftMoveInd = IndicatorList[0];
+        int x = (int)Math.Round(leftMoveInd.transform.position.x);
+        int y = (int)Math.Round(leftMoveInd.transform.position.y);
+
         foreach (UnityEngine.GameObject indicator in IndicatorList)
         {
             if (indicator.transform.position.x < x)
             {
                 x = (int)Math.Round(indicator.transform.position.x);
                 y = (int)Math.Round(indicator.transform.position.y);
+                leftMoveInd = indicator;
             }
             else if (indicator.transform.position.x == x && indicator.transform.position.y > y)
             {
                 x = (int)Math.Round(indicator.transform.position.x);
                 y = (int)Math.Round(indicator.transform.position.y);
+                leftMoveInd = indicator;
             }
         }
+        return leftMoveInd;
 
+    }
+    //moves unit as far left as legally allowed, called by AI team
+    public void moveLeft()
+    {
+        //Debug.Log("unit movin left");
+        makeMoveIndicators();
+        // x and y values for the current furthest left movement indicator
+
+        GameObject leftMoveInd = findLeftMoveIndicator();
 
         Vector3 newPos;
         newPos.z = this.transform.position.z;
-        newPos.x = x;
-        newPos.y = y;
+        newPos.x = (int)Math.Round(leftMoveInd.transform.position.x);
+        newPos.y = (int)Math.Round(leftMoveInd.transform.position.y);
+
         if (newPos.x == 0 && !GameBoard.Instance.GameOver)
         {
             GameBoard.Instance.GameOver = true;
@@ -505,6 +517,11 @@ public abstract class Unit : MonoBehaviour
             UnityEngine.GameObject x = Instantiate(moveIndicator, pos, Quaternion.identity) as GameObject;
             x.GetComponent<moveindicatorscript>().path = path;
             IndicatorList.Add(x);
+
+            if (this is APC) { 
+                x.renderer.material.color = new Color(x.renderer.material.color.r, x.renderer.material.color.g, x.renderer.material.color.b, .3f);
+                Destroy(x.collider2D);
+            }
         }
 
         int movementRemaining = movedist - movecost;

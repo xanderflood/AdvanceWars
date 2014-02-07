@@ -1,18 +1,29 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public class APC : Unit
 {
+    List<GameObject> drawnMoveArrows = new List<GameObject>();
 
 	void Start () {
 		isVehicle = true;
 	}
     protected override void Update() {
         base.Update();
+
+
+
         if (!GameBoard.Instance.someUnitAnimating)
         {
+            foreach (GameObject go in drawnMoveArrows)
+            {
+                Destroy(go);
+            }
             DeleteIndicators();
             makeMoveIndicators();
+            GameObject dest = findLeftMoveIndicator();
+            moveindicatorscript destScript = (moveindicatorscript) dest.GetComponent(typeof(moveindicatorscript));
+            destScript.drawPath(destScript.path, this.transform.position, drawnMoveArrows);
         }
     
     }

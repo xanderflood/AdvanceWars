@@ -18,15 +18,16 @@ public class moveindicatorscript : MonoBehaviour {
 	
 	static List<GameObject> drawn = new List<GameObject>();
 	
+
+    
 	void OnTriggerEnter2D(Collider2D other) {
-		
 		CursorScript.Instance.currentIndicator = this.gameObject;
-		
-		drawPath (path, Unit.currentSelectedUnit.transform.position);
+        destroyPath();
+		drawPath (path, Unit.currentSelectedUnit.transform.position, drawn);
 	}
 	
 	void OnTriggerExit2D(Collider2D other) {
-		
+ 
 		if (CursorScript.Instance.currentIndicator == this) {
 			CursorScript.Instance.currentIndicator = null;
 		}
@@ -37,10 +38,11 @@ public class moveindicatorscript : MonoBehaviour {
 			Destroy (go);
 		}
 	}
-	
-	void drawPath(List<Direction> path, Vector3 pos) {
+
+    public void drawPath(List<Direction> path, Vector3 pos, List<GameObject> ArrowList )
+    {
 		
-		destroyPath ();
+
 		
 		GameObject tmp = null;
 		foreach (Direction d in path) {
@@ -68,8 +70,8 @@ public class moveindicatorscript : MonoBehaviour {
 				pos.y -= 0.5f;
 				break;
 			}
-			
-			drawn.Add(tmp);
+
+            ArrowList.Add(tmp);
 		}
 		
 	}
