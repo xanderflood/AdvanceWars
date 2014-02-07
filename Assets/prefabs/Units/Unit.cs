@@ -114,6 +114,7 @@ public abstract class Unit : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.X))
         { // cancel whatever we are doing
             CancelActionIfApplicable();
+			moveindicatorscript.destroyPath();
             return;
         }
         if (menuing)
@@ -129,6 +130,7 @@ public abstract class Unit : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Z))
             {
                 handleMove();
+				moveindicatorscript.destroyPath();
             }
         }
         else if (isUnderCursor)
