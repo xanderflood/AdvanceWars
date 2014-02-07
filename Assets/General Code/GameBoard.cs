@@ -38,7 +38,7 @@ public class GameBoard : ScriptableObject {
     public int curlevel = 0;
 	public Team redTeam;
 	public Team blueTeam;
-	
+    public bool someUnitAnimating;
 	public bool someUnitActive;
 	public bool someUnitAttacking;
 	

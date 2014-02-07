@@ -48,7 +48,19 @@ public abstract class Unit : MonoBehaviour
     abstract protected int GetUnitMoveCost(TerrainType terrain);
     abstract protected int GetUnitMoveRange();
     abstract protected int GetAttack(Unit target);
-    public bool InMoveAnimation = false;
+    private bool _InMoveAnimation;
+    public bool InMoveAnimation
+    {
+        set
+        {
+            GameBoard.Instance.someUnitAnimating = value;
+            _InMoveAnimation = value;
+        }
+        get {
+            return _InMoveAnimation;
+        }
+    }
+
     Vector2 destaion_pos; //where we are animating twards
     Vector2 start_pos; // pos we started animatino from
     float animationStartTime;
@@ -56,6 +68,7 @@ public abstract class Unit : MonoBehaviour
     // Use this for initialization
     public void Start()
     {
+        InMoveAnimation = false;
         lookingAtEnemyIndicators = false;
         cursorLoc = GameObject.Find("cursor").transform;
         moveIndicator = Resources.Load("moveIndicator");
@@ -71,7 +84,7 @@ public abstract class Unit : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    protected virtual void Update()
     {
         if (InMoveAnimation)
         {
@@ -82,8 +95,15 @@ public abstract class Unit : MonoBehaviour
             {
                 transform.position = destaion_pos;
                 InMoveAnimation = false;
-                CursorScript.Instance.unitMenu.GetComponent<UAMScript>().turnOn(this);
-                menuing = true;
+                if (this is APC) // APC are AI and thus get no menu
+                {
+                    return;
+                }
+                else
+                {
+                    CursorScript.Instance.unitMenu.GetComponent<UAMScript>().turnOn(this);
+                    menuing = true;
+                }
             }
             return;
         }
@@ -293,7 +313,7 @@ public abstract class Unit : MonoBehaviour
         GameBoard.Instance.someUnitAttacking = true;
     }
 
-    void makeMoveIndicators()
+    protected void makeMoveIndicators()
     {
         //make the move nowhere indicator first, because recursive won't do it, as there is a unit there allready
         int xpos = (int)Math.Round(this.transform.position.x, 0);
@@ -548,7 +568,7 @@ public abstract class Unit : MonoBehaviour
     }
 
     // cleans up any movement or attack indicators we have made
-    void DeleteIndicators()
+    protected void DeleteIndicators()
     {
         foreach (GameObject x in IndicatorList)
         {

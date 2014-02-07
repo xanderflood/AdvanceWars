@@ -7,6 +7,15 @@ public class APC : Unit
 	void Start () {
 		isVehicle = true;
 	}
+    protected override void Update() {
+        base.Update();
+        if (!GameBoard.Instance.someUnitAnimating)
+        {
+            DeleteIndicators();
+            makeMoveIndicators();
+        }
+    
+    }
 
     override protected int GetUnitMoveCost(TerrainType terrain)
     {
