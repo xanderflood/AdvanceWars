@@ -217,6 +217,11 @@ public abstract class Unit : MonoBehaviour
 		gunFire.transform.position = attackTarget.transform.position;
 		gunFire.SetActive (true);
 
+		int dmg = this.GetAttack (attackTarget);
+		GameObject dmgInd = attackTarget.transform.Find ("Dmg Display").gameObject;
+		dmgInd.GetComponent<TextMesh> ().text = "-" + dmg.ToString ();
+		dmgInd.SetActive (true);
+
 		float time = 0f;
 		while (time < _attackAnimTime) {
 			time += Time.deltaTime;
@@ -226,6 +231,7 @@ public abstract class Unit : MonoBehaviour
 
 		attackTarget.DealDamage(this.GetAttack(attackTarget));
 		gunFire.SetActive(false);
+		dmgInd.SetActive (false);
 
 		// Check if the target survived
 		if (!attackTarget.gameObject.activeSelf)
@@ -234,6 +240,11 @@ public abstract class Unit : MonoBehaviour
 		// Otherwise, counterattack
 		gunFire.transform.position = transform.position;
 		gunFire.SetActive (true);
+		dmg = attackTarget.GetAttack (this);
+		dmgInd = this.transform.Find ("Dmg Display").gameObject;
+		dmgInd.GetComponent<TextMesh> ().text = "-" + dmg.ToString ();
+		dmgInd.SetActive (true);
+
 
 		time = 0f;
 		while (time < _attackAnimTime) {
@@ -244,6 +255,7 @@ public abstract class Unit : MonoBehaviour
 		
 		this.DealDamage (attackTarget.GetAttack (this));
 		gunFire.SetActive (false);
+		dmgInd.SetActive (false);
 
 		InAnimation = false;
 		isAttacking = false;
