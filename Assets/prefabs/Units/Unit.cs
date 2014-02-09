@@ -305,7 +305,8 @@ public abstract class Unit : MonoBehaviour
 		bool IsCursorOverMoveIndicator = false;
         foreach (GameObject tmp in IndicatorList)
         {
-            if (Vector2.Distance(tmp.transform.position, cursorLoc.position) < .3f)
+            if (Vector2.Distance(tmp.transform.position, cursorLoc.position) < .3f
+			    && tmp.activeSelf)
             {
                 IsCursorOverMoveIndicator = true;
 				movementPath = tmp.GetComponent<moveindicatorscript> ().path;
