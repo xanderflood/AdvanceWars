@@ -90,27 +90,9 @@ public abstract class Unit : MonoBehaviour
     // Update is called once per frame
     protected virtual void Update()
     {
-        if (InAnimation && !isAttacking)
-        {
-            float distCovered = (Time.time - animationStartTime) * 6;
-            float fracJourney = distCovered / Vector2.Distance(start_pos, destaion_pos);
-            transform.position = Vector2.Lerp(start_pos, destaion_pos, fracJourney);
-            if (fracJourney > .99f)
-            {
-                transform.position = destaion_pos;
-                InAnimation = false;
-                if (this is APC) // APC are AI and thus get no menu
-                {
-                    return;
-                }
-                else
-                {
-                    CursorScript.Instance.unitMenu.GetComponent<UAMScript>().turnOn(this);
-                    menuing = true;
-                }
-            }
-            return;
-        }
+        if (InAnimation)
+			return;
+
         if (Input.GetKeyDown(KeyCode.X) && Input.GetKeyDown(KeyCode.Z)) { return; }// prevent dumb bugs if they hit go and stop at the same time
 
         if (Input.GetKeyDown(KeyCode.X))
@@ -201,7 +183,38 @@ public abstract class Unit : MonoBehaviour
             GameBoard.Instance.isAnyoneSelected = false;
             GameBoard.Instance.someUnitActive = false;
         }
-    }
+	}
+
+	public const float moveRate = 0.05f;
+	public List<Direction> movementPath;
+	IEnumerator moveAnimationCoroutine() {
+		
+		InAnimation = true;
+		
+		Vector3 dir;
+		Vector3 total;
+		Vector3 dest;
+		foreach (Direction d in movementPath) {
+			
+			dir = dirToVec(d);
+			total = new Vector3();
+			dest = transform.position + dir;
+			// Move in that direction
+			while (total.magnitude < 1f) {
+				transform.position += dir*moveRate;
+				total += dir*moveRate;
+				yield return true;
+			}
+			
+			transform.position = dest;
+		}
+		
+		InAnimation = false;
+		GameBoard.Instance.unitLocs.Add(transform.position);
+		
+		CursorScript.Instance.unitMenu.GetComponent<UAMScript>().turnOn(this);
+		menuing = true;
+	}
 
 	const float _attackAnimTime = 0.5f;
 	public Unit attackTarget;
@@ -281,12 +294,13 @@ public abstract class Unit : MonoBehaviour
     void handleMove()
     {
         //first, make sure the cursor is within the unit's movement rage!
-        bool IsCursorOverMoveIndicator = false;
+		bool IsCursorOverMoveIndicator = false;
         foreach (GameObject tmp in IndicatorList)
         {
             if (Vector2.Distance(tmp.transform.position, cursorLoc.position) < .3f)
             {
                 IsCursorOverMoveIndicator = true;
+				movementPath = tmp.GetComponent<moveindicatorscript> ().path;
                 break;
             }
         }
@@ -301,7 +315,6 @@ public abstract class Unit : MonoBehaviour
         {
             return;
         }
-        DeleteIndicators();
         Vector3 pos = this.transform.position;
 
         //we are moving the unit, so remove it's old location from the list
@@ -315,17 +328,12 @@ public abstract class Unit : MonoBehaviour
         }
 
         CursorScript.Instance.gameObject.SetActive(false);
-        pos = new Vector3(CursorScript.Instance.shouldbex, CursorScript.Instance.shouldbey, 0);
-
-        InAnimation = true;
-        destaion_pos = pos;
-        start_pos = this.transform.position;
-        animationStartTime = Time.time;
-
-        //add its new location to the list of unit locations
-        GameBoard.Instance.unitLocs.Add(pos);
-
-        return;
+		pos = new Vector3(CursorScript.Instance.shouldbex, CursorScript.Instance.shouldbey, 0);
+		StartCoroutine (moveAnimationCoroutine ());
+		
+		DeleteIndicators();
+		
+		return;
 
         /*
         foreach (GameObject tmp in IndicatorList)
@@ -747,5 +755,20 @@ public abstract class Unit : MonoBehaviour
         GameBoard.Instance.unitLocs.Remove(this.gameObject.transform.position);
         gameObject.SetActive(false);
         owner.unitDestroyed(this);
-    }
+	}
+	
+	public static Vector3 dirToVec(Direction dir) {
+		switch (dir) {
+		case Direction.Up:
+			return new Vector3(0,1,0);
+		case Direction.Down:
+			return new Vector3(0,-1,0);
+		case Direction.Right:
+			return new Vector3(1,0,0);
+		case Direction.Left:
+			return new Vector3(-1,0,0);
+		}
+		
+		return new Vector3();
+	}
 }
