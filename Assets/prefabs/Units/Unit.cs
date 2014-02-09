@@ -331,6 +331,7 @@ public abstract class Unit : MonoBehaviour
 
         CursorScript.Instance.gameObject.SetActive(false);
 		pos = new Vector3(CursorScript.Instance.shouldbex, CursorScript.Instance.shouldbey, 0);
+        start_pos = this.transform.position;
 		StartCoroutine (moveAnimationCoroutine ());
 		
 		return;

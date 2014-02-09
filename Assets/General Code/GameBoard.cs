@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 [System.Serializable]
 public enum TerrainType {
@@ -127,4 +128,22 @@ public class GameBoard : ScriptableObject {
 			sr.color = Color.red;
 		}
 	}
+    public int getTerrainDefenceBonus(Transform UnitLoc) {
+        int x = (int)Math.Round(UnitLoc.position.x);
+        int y = (int)Math.Round(UnitLoc.position.y);
+
+        TerrainType t = terrains[x, y];
+        switch (t) { 
+            case TerrainType.Field:
+                return 1;
+            case TerrainType.Forest:
+                return 2;
+            case TerrainType.Mountain:
+                return 4;
+            case TerrainType.Road:
+                return 0;      
+        }
+        return 0;
+    }
 }
+
