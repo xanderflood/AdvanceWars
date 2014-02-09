@@ -26,7 +26,7 @@ public class Mech : Unit {
 
 	override protected int GetAttack(Unit target) {
 
-        return (int)System.Math.Round((hp / 10f) * 7f) * ((100 - target.hp * GameBoard.Instance.getTerrainDefenceBonus(target.transform)) / 100);
+        return (int)System.Math.Round((hp / 10f) * 7f * ((100f - target.hp * GameBoard.Instance.getTerrainDefenceBonus(target.transform)) / 100f));
 	}
 
 	protected override void Die()

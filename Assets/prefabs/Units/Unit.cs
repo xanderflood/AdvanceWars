@@ -65,9 +65,7 @@ public abstract class Unit : MonoBehaviour
         }
     }
 
-    Vector2 destaion_pos; //where we are animating twards
-    Vector2 start_pos; // pos we started animatino from
-    float animationStartTime;
+    Vector2 start_pos; // pos we started animation from
 
     // Use this for initialization
     public void Start()
@@ -211,7 +209,10 @@ public abstract class Unit : MonoBehaviour
 		
 		InAnimation = false;
 		GameBoard.Instance.unitLocs.Add(transform.position);
-		
+
+        if (this is APC)
+            return false;
+
 		CursorScript.Instance.unitMenu.GetComponent<UAMScript>().turnOn(this);
 		menuing = true;
 	}
@@ -518,9 +519,10 @@ public abstract class Unit : MonoBehaviour
 
         //setup values for animation
         InAnimation = true;
-        destaion_pos = newPos;
         start_pos = this.transform.position;
-        animationStartTime = Time.time;
+
+        movementPath = findLeftMoveIndicator().GetComponent<moveindicatorscript>().path;
+        StartCoroutine(moveAnimationCoroutine());
 
         DeleteIndicators();
     }
