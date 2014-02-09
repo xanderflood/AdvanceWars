@@ -145,9 +145,9 @@ public abstract class Unit : MonoBehaviour
             menuing = true;
             DeleteIndicators();
             //disable the cursor because we are in a menu, allso make sure that we are not displaying the attack cursor
-            CursorScript.Instance.gameObject.SetActive(false);
-            CursorScript.Instance.cursorsr.gameObject.SetActive(true);
-            CursorScript.Instance.crosshsr.gameObject.SetActive(false);
+			CursorScript.Instance.gameObject.SetActive(false);
+			CursorScript.Instance.cursorsr.gameObject.SetActive(true);
+			CursorScript.Instance.crosshsr.gameObject.SetActive(false);
 
             //open menu back up
             CursorScript.Instance.unitMenu.GetComponent<UAMScript>().turnOn(this);
@@ -400,9 +400,13 @@ public abstract class Unit : MonoBehaviour
         {
             g.SetActive(true);
         }
+		
+		CursorScript.Instance.cursorsr.gameObject.SetActive(false);
+		CursorScript.Instance.crosshsr.gameObject.SetActive(true);
 
         isReadyToAttack = true;
         GameBoard.Instance.someUnitAttacking = true;
+
     }
 
     protected void makeMoveIndicators()
