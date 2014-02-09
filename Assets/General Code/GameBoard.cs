@@ -80,14 +80,28 @@ public class GameBoard : ScriptableObject {
 			terrains[x, 1] = TerrainType.Field;
 			terrains[x, 2] = TerrainType.Road;
 			terrains[x, 3] = TerrainType.Field;
-            terrains[x, 4] = TerrainType.Forest;
+            terrains[x, 4] = TerrainType.Field;
             terrains[x, 5] = TerrainType.Field;
             terrains[x, 6] = TerrainType.Field;
             terrains[x, 7] = TerrainType.Road;
             terrains[x, 8] = TerrainType.Field;
             terrains[x, 9] = TerrainType.Mountain;
 		}
+        terrains[6, 1] = TerrainType.Forest;
+        terrains[5, 1] = TerrainType.Forest;
+        terrains[5, 3] = TerrainType.Forest;
+        terrains[4, 3] = TerrainType.Forest;
 
+        terrains[4, 4] = TerrainType.Forest;
+        terrains[3, 4] = TerrainType.Forest;
+        terrains[3, 5] = TerrainType.Forest;
+        terrains[2, 5] = TerrainType.Forest;
+
+
+        terrains[2, 6] = TerrainType.Forest;
+        terrains[1, 6] = TerrainType.Forest;
+        terrains[0, 8] = TerrainType.Forest;
+        terrains[1, 8] = TerrainType.Forest;
 	}
 
 	public void changeTeam() {
