@@ -410,7 +410,15 @@ public abstract class Unit : MonoBehaviour
         // add go nowhere indicator
         UnityEngine.GameObject x = Instantiate(moveIndicator, this.transform.position, Quaternion.identity) as GameObject;
         IndicatorList.Add(x);
-        CursorScript.Instance.currentIndicator = x;
+
+        if (this is APC)
+        {
+            x.renderer.material.color = new Color(x.renderer.material.color.r, x.renderer.material.color.g, x.renderer.material.color.b, .3f);
+            Destroy(x.collider2D);
+        }
+        else {
+            CursorScript.Instance.currentIndicator = x;
+        }
 
         //add 4 adjancent squares to our queue
         PriQueueElt queueElt;
