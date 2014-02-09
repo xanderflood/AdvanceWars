@@ -28,6 +28,9 @@ public class CursorScript : MonoBehaviour {
 	void Update()
 	{
 
+		if (GameBoard.Instance.someUnitAnimating)
+			return;
+
 		if (!unitMenu.activeSelf) {
 			cursorsr = gameObject.transform.FindChild ("sprite").GetComponent<SpriteRenderer> ();
 			crosshsr = gameObject.transform.FindChild ("crosshair").GetComponent<SpriteRenderer> ();

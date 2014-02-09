@@ -207,6 +207,10 @@ public abstract class Unit : MonoBehaviour
 	public Unit attackTarget;
 	public bool isAttacking;
 	IEnumerator attackAnimationCoroutine() {
+
+		// Turn off the crosshair
+		CursorScript.Instance.crosshsr.gameObject.SetActive(false);
+
 		// This is a property with a setter that takes care of the GameObject attribute
 		InAnimation = true;
 		isAttacking = true;
@@ -269,9 +273,9 @@ public abstract class Unit : MonoBehaviour
 		
 		hasMovedThisTurn = true;
 		owner.unitMoved();
-		
+
+		// Turn on the cursor
 		CursorScript.Instance.cursorsr.gameObject.SetActive(true);
-		CursorScript.Instance.crosshsr.gameObject.SetActive(false);
 	}
 
     void handleMove()
