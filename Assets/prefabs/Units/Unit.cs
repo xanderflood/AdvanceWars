@@ -112,7 +112,6 @@ public abstract class Unit : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Z))
             {
                 handleMove();
-				moveindicatorscript.destroyPath();
             }
         }
         else if (isUnderCursor)
@@ -293,8 +292,16 @@ public abstract class Unit : MonoBehaviour
 	}
 
     void handleMove()
-    {
-        //first, make sure the cursor is within the unit's movement rage!
+	{
+
+		// if the cursor is currently in motion, dont allow units to move, 
+		//this stops the bug where we check if a location is valid to move to, then the cursor moves, then we move the unit to that location
+		if (!CursorScript.Instance.canmove)
+		{
+			return;
+		}
+
+		//first, make sure the cursor is within the unit's movement rage!
 		bool IsCursorOverMoveIndicator = false;
         foreach (GameObject tmp in IndicatorList)
         {
@@ -302,6 +309,7 @@ public abstract class Unit : MonoBehaviour
             {
                 IsCursorOverMoveIndicator = true;
 				movementPath = tmp.GetComponent<moveindicatorscript> ().path;
+				moveindicatorscript.destroyPath();
                 break;
             }
         }
@@ -311,13 +319,6 @@ public abstract class Unit : MonoBehaviour
         }
 		
 		DeleteIndicators();
-
-        // if the cursor is currently in motion, dont allow units to move, 
-        //this stops the bug where we check if a location is valid to move to, then the cursor moves, then we move the unit to that location
-        if (!CursorScript.Instance.canmove)
-        {
-            return;
-        }
         Vector3 pos = this.transform.position;
 
         //we are moving the unit, so remove it's old location from the list
