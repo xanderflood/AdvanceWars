@@ -30,8 +30,8 @@ public class Infintry : Unit {
 		if (target.isVehicle) {
 			return 0;
 		}
-		
-		return (int)System.Math.Round((hp / 10f)*5f);
+
+        return (int)System.Math.Round((hp / 10f) * 6f) * ((100 - target.hp * GameBoard.Instance.getTerrainDefenceBonus(target.transform)) / 100);
 	}
 
 }
