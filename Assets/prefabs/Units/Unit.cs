@@ -217,7 +217,12 @@ public abstract class Unit : MonoBehaviour
 		gunFire.transform.position = attackTarget.transform.position;
 		gunFire.SetActive (true);
 
-		yield return new WaitForSeconds(_attackAnimTime);
+		float time = 0f;
+		while (time < _attackAnimTime) {
+			time += Time.deltaTime;
+
+			yield return true;
+		}
 
 		attackTarget.DealDamage(this.GetAttack(attackTarget));
 		gunFire.SetActive(false);
@@ -229,8 +234,13 @@ public abstract class Unit : MonoBehaviour
 		// Otherwise, counterattack
 		gunFire.transform.position = transform.position;
 		gunFire.SetActive (true);
-		
-		yield return new WaitForSeconds (_attackAnimTime);
+
+		time = 0f;
+		while (time < _attackAnimTime) {
+			time += Time.deltaTime;
+			
+			yield return true;
+		}
 		
 		this.DealDamage (attackTarget.GetAttack (this));
 		gunFire.SetActive (false);
