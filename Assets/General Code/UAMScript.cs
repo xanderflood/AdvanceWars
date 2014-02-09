@@ -22,21 +22,16 @@ public class UAMScript : MonoBehaviour {
 			pos.y -= diff;
 			canFire = false;
             onFire = false;
-			col.a = 50;
+			col.a = 0.3f;
 
 		} else {
 			canFire = true;
             onFire = true;
-			col.a = 255;
+			col.a = 1;
 		}
 
 		transform.FindChild ("MenuIcon").transform.position = pos;
 		transform.FindChild ("Fire").GetComponent<SpriteRenderer> ().color = col;
-	}
-
-	// Use this for initialization
-	void Start () {
-	
 	}
 	
 	// Update is called once per frame
