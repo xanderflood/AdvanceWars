@@ -3,7 +3,7 @@ using System.Collections;
 
 public abstract class RedUnit : Unit {
 	
-	void Start()
+	new void Start()
 	{
 
 		base.Start ();

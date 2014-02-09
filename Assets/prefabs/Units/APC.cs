@@ -5,7 +5,7 @@ public class APC : Unit
 {
     List<GameObject> drawnMoveArrows = new List<GameObject>();
 
-	void Start () {
+	new void Start () {
 		isVehicle = true;
 	}
     protected override void Update() {

@@ -8,6 +8,8 @@ public class GameSystemControl : MonoBehaviour {
 	public GameObject mountain;
 	public GameObject wood;
 
+	public GameObject gunFire;
+
 	public GameBoard game;
 
 	// Use this for initialization

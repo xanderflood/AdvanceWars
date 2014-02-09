@@ -50,16 +50,18 @@ public abstract class Unit : MonoBehaviour
     abstract protected int GetUnitMoveCost(TerrainType terrain);
     abstract protected int GetUnitMoveRange();
     abstract protected int GetAttack(Unit target);
-    private bool _InMoveAnimation;
-    public bool InMoveAnimation
+
+	// This denotes BOTH move animation AND attack animation
+    private bool _InAnimation;
+    public bool InAnimation
     {
         set
         {
             GameBoard.Instance.someUnitAnimating = value;
-            _InMoveAnimation = value;
+            _InAnimation = value;
         }
         get {
-            return _InMoveAnimation;
+            return _InAnimation;
         }
     }
 
@@ -70,7 +72,7 @@ public abstract class Unit : MonoBehaviour
     // Use this for initialization
     public void Start()
     {
-        InMoveAnimation = false;
+        InAnimation = false;
         lookingAtEnemyIndicators = false;
         cursorLoc = GameObject.Find("cursor").transform;
         moveIndicator = Resources.Load("moveIndicator");
@@ -88,7 +90,7 @@ public abstract class Unit : MonoBehaviour
     // Update is called once per frame
     protected virtual void Update()
     {
-        if (InMoveAnimation)
+        if (InAnimation && !isAttacking)
         {
             float distCovered = (Time.time - animationStartTime) * 6;
             float fracJourney = distCovered / Vector2.Distance(start_pos, destaion_pos);
@@ -96,7 +98,7 @@ public abstract class Unit : MonoBehaviour
             if (fracJourney > .99f)
             {
                 transform.position = destaion_pos;
-                InMoveAnimation = false;
+                InAnimation = false;
                 if (this is APC) // APC are AI and thus get no menu
                 {
                     return;
@@ -201,9 +203,58 @@ public abstract class Unit : MonoBehaviour
         }
     }
 
+	const float _attackAnimTime = 0.5f;
+	public Unit attackTarget;
+	public bool isAttacking;
+	IEnumerator attackAnimationCoroutine() {
+		// This is a property with a setter that takes care of the GameObject attribute
+		InAnimation = true;
+		isAttacking = true;
+
+		GameObject gunFire = GameObject.Find ("Controller").GetComponent<GameSystemControl> ().gunFire;
+
+		// Attack
+		gunFire.transform.position = attackTarget.transform.position;
+		gunFire.SetActive (true);
+
+		yield return new WaitForSeconds(_attackAnimTime);
+
+		attackTarget.DealDamage(this.GetAttack(attackTarget));
+		gunFire.SetActive(false);
+
+		// Check if the target survived
+		if (!attackTarget.gameObject.activeSelf)
+			return false;
+		
+		// Otherwise, counterattack
+		gunFire.transform.position = transform.position;
+		gunFire.SetActive (true);
+		
+		yield return new WaitForSeconds (_attackAnimTime);
+		
+		this.DealDamage (attackTarget.GetAttack (this));
+		gunFire.SetActive (false);
+
+		InAnimation = false;
+		isAttacking = false;
+
+		isSelected = false;
+		GameBoard.Instance.isAnyoneSelected = false;
+		GameBoard.Instance.someUnitAttacking = false;
+		isReadyToAttack = false;
+		
+		GameBoard.Instance.someUnitActive = false;
+		
+		hasMovedThisTurn = true;
+		owner.unitMoved();
+		
+		CursorScript.Instance.cursorsr.gameObject.SetActive(true);
+		CursorScript.Instance.crosshsr.gameObject.SetActive(false);
+	}
+
     void handleMove()
     {
-        //first, make sure the cursor is within the units movement rage!
+        //first, make sure the cursor is within the unit's movement rage!
         bool IsCursorOverMoveIndicator = false;
         foreach (GameObject tmp in IndicatorList)
         {
@@ -240,7 +291,7 @@ public abstract class Unit : MonoBehaviour
         CursorScript.Instance.gameObject.SetActive(false);
         pos = new Vector3(CursorScript.Instance.shouldbex, CursorScript.Instance.shouldbey, 0);
 
-        InMoveAnimation = true;
+        InAnimation = true;
         destaion_pos = pos;
         start_pos = this.transform.position;
         animationStartTime = Time.time;
@@ -328,8 +379,6 @@ public abstract class Unit : MonoBehaviour
         if (Math.Abs(xpos - this.transform.position.x) + Math.Abs(ypos - this.transform.position.y) > .3f)
         {
             Debug.Log("oh god da fuck is happenin");
-            int zero = 0;
-            int error = 1 / zero;
         }
 
         // add go nowhere indicator
@@ -421,7 +470,7 @@ public abstract class Unit : MonoBehaviour
         GameBoard.Instance.unitLocs.Add(newPos);
 
         //setup values for animation
-        InMoveAnimation = true;
+        InAnimation = true;
         destaion_pos = newPos;
         start_pos = this.transform.position;
         animationStartTime = Time.time;
@@ -507,8 +556,6 @@ public abstract class Unit : MonoBehaviour
         if (xloc < 0 || yloc < 0)
         {
             Debug.Log("oh god da fuck is happenin");
-            int zero = 0;
-            int error = 1 / zero;
         }
 
 
@@ -629,29 +676,17 @@ public abstract class Unit : MonoBehaviour
         {
             if (Vector2.Distance(tmp.transform.position, cursorLoc.position) < .3f)
             {
-                //here is where we check if we are attacking and attack if needed, otherwise juse end turn
+                //here is where we check if we are attacking and attack if needed, otherwise just end turn
                 DeleteIndicators();
 
                 Unit target = CursorScript.Instance.unitUnderCursor;
 
                 if (target.team != GameBoard.Instance.current)
                 {
-                    target.DealDamage(this.GetAttack(target));
-                    this.DealDamage(target.GetAttack(this));
+					attackTarget = target;
+					StartCoroutine(attackAnimationCoroutine());
                 }
-                isSelected = false;
-                GameBoard.Instance.isAnyoneSelected = false;
-                GameBoard.Instance.someUnitAttacking = false;
-                isReadyToAttack = false;
 
-                GameBoard.Instance.someUnitActive = false;
-
-                hasMovedThisTurn = true;
-                //Debug.Log(owner);
-                owner.unitMoved();
-
-                CursorScript.Instance.cursorsr.gameObject.SetActive(true);
-                CursorScript.Instance.crosshsr.gameObject.SetActive(false);
                 break;
             }
         }

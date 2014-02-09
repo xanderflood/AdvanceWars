@@ -47,7 +47,6 @@ public class moveindicatorscript : MonoBehaviour {
 		GameObject tmp = null;
 		foreach (Direction d in path) {
 
-			Quaternion rot;
 			switch(d) {
 			case Direction.Right:
 				pos.x += 0.5f;
