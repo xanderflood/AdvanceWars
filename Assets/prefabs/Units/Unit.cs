@@ -443,11 +443,15 @@ public abstract class Unit : MonoBehaviour
     public GameObject findLeftMoveIndicator() {
 
         GameObject leftMoveInd = IndicatorList[0];
-        int x = (int)Math.Round(leftMoveInd.transform.position.x);
-        int y = (int)Math.Round(leftMoveInd.transform.position.y);
+        int x = 1000;//(int)Math.Round(leftMoveInd.transform.position.x);
+        int y = 1000; //(int)Math.Round(leftMoveInd.transform.position.y);
 
         foreach (UnityEngine.GameObject indicator in IndicatorList)
         {
+            if (Math.Abs(indicator.transform.position.y - 1) < .2f || Math.Abs(indicator.transform.position.y - 8) <.2f) {
+                //Debug.Log("ain't goin there");
+                continue;
+            }
             if (indicator.transform.position.x < x)
             {
                 x = (int)Math.Round(indicator.transform.position.x);
