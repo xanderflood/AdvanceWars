@@ -7,6 +7,7 @@ public enum TerrainType {
 	Road = 1,
 	Field = 2,
 	Mountain = 3,
+    Forest = 4,
 };
 
 [System.Serializable]
@@ -79,7 +80,7 @@ public class GameBoard : ScriptableObject {
 			terrains[x, 1] = TerrainType.Field;
 			terrains[x, 2] = TerrainType.Road;
 			terrains[x, 3] = TerrainType.Field;
-			terrains[x, 4] = TerrainType.Field;
+            terrains[x, 4] = TerrainType.Forest;
             terrains[x, 5] = TerrainType.Field;
             terrains[x, 6] = TerrainType.Field;
             terrains[x, 7] = TerrainType.Road;

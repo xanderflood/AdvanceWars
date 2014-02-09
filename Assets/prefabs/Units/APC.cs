@@ -20,10 +20,12 @@ public class APC : Unit
                 Destroy(go);
             }
             DeleteIndicators();
-            makeMoveIndicators();
-            GameObject dest = findLeftMoveIndicator();
-            moveindicatorscript destScript = (moveindicatorscript) dest.GetComponent(typeof(moveindicatorscript));
-            destScript.drawPath(destScript.path, this.transform.position, drawnMoveArrows);
+            if (!GameBoard.Instance.GameOver) { 
+                makeMoveIndicators();
+                GameObject dest = findLeftMoveIndicator();
+                moveindicatorscript destScript = (moveindicatorscript) dest.GetComponent(typeof(moveindicatorscript));
+                destScript.drawPath(destScript.path, this.transform.position, drawnMoveArrows);
+            }
         }
     
     }
@@ -37,6 +39,10 @@ public class APC : Unit
         else if (terrain == TerrainType.Road)
         {
             return 1;
+        }
+        else if (terrain == TerrainType.Forest)
+        {
+            return 2;
         }
         else ///if (terrain == TerrainType.Mountain)
         {

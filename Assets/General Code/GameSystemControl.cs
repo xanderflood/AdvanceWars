@@ -29,6 +29,9 @@ public class GameSystemControl : MonoBehaviour {
 					break;
 				case TerrainType.Mountain:
 					Instantiate(mountain, new Vector3(x, y, 0), Quaternion.identity);
+                    break;
+                case TerrainType.Forest:
+					Instantiate(wood, new Vector3(x, y, 0), Quaternion.identity);
 					break;
 				}
 			}

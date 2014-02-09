@@ -12,6 +12,9 @@ public class Infintry : Unit {
         {
             return 1;
         }
+        else if (terrain == TerrainType.Forest) {
+            return 1;
+        }
         else ///if (terrain == TerrainType.Mountain)
         {
             return 2;
