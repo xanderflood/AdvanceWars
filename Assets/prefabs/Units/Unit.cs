@@ -308,6 +308,8 @@ public abstract class Unit : MonoBehaviour
         {
             return;
         }
+		
+		DeleteIndicators();
 
         // if the cursor is currently in motion, dont allow units to move, 
         //this stops the bug where we check if a location is valid to move to, then the cursor moves, then we move the unit to that location
@@ -330,8 +332,6 @@ public abstract class Unit : MonoBehaviour
         CursorScript.Instance.gameObject.SetActive(false);
 		pos = new Vector3(CursorScript.Instance.shouldbex, CursorScript.Instance.shouldbey, 0);
 		StartCoroutine (moveAnimationCoroutine ());
-		
-		DeleteIndicators();
 		
 		return;
 
