@@ -21,6 +21,8 @@ public class LevelSelect : MonoBehaviour {
             GameBoard.Instance.curlevel = 0;
             GameBoard.Instance.MakeCustomLevel();
             Application.LoadLevel("MyCustomLevel");
+
+			GameBoard.Instance.tutorialing = true;
         }
 	}
 }

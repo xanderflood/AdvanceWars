@@ -45,6 +45,8 @@ public class GameBoard : ScriptableObject {
 	public bool someUnitAttacking;
 	
 	private static GameBoard instance;
+
+	public bool tutorialing;
 	
 	private GameBoard() { }
 

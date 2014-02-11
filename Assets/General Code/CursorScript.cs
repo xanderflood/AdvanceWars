@@ -30,6 +30,9 @@ public class CursorScript : MonoBehaviour {
 	void Update()
 	{
 
+		if (GameBoard.Instance.tutorialing)
+			return;
+
 		if (GameBoard.Instance.someUnitAnimating)
 			return;
 

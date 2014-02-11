@@ -91,6 +91,9 @@ public abstract class Unit : MonoBehaviour
         if (InAnimation)
 			return;
 
+		if (GameBoard.Instance.tutorialing)
+			return;
+
         if (Input.GetKeyDown(KeyCode.X) && Input.GetKeyDown(KeyCode.Z)) { return; }// prevent dumb bugs if they hit go and stop at the same time
 
         if (Input.GetKeyDown(KeyCode.X))
