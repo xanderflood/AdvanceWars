@@ -42,9 +42,11 @@ public class GameSystemControl : MonoBehaviour {
 	void Update () {
 
 		// Check whether turn ended
+        /*
 		if (Input.GetKeyDown (KeyCode.W)) {
 			GameBoard.Instance.changeTeam();
-		}
+		}*/
+        /*
         if (Input.GetKeyDown(KeyCode.Q))
         {
             GameBoard.Instance.unitLocs.Clear();
@@ -62,7 +64,7 @@ public class GameSystemControl : MonoBehaviour {
                 GameBoard.Instance.curlevel = 0;
                 Application.LoadLevel("MyCustomLevel");
             }
-        }
+        }*/
 
 	}
 }
