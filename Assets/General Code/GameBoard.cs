@@ -64,30 +64,35 @@ public class GameBoard : ScriptableObject {
 	// Contains the sample level, basically
 	private void Initialize() {
 
-		sizex = sizey = 10;
+		sizex = sizey = 15;
 
 		terrains = new TerrainType[sizex, sizey];
 
 		// Load the gameboard
-		for (int x = 0; x < sizex; ++x) {
-			for (int y = 0; y < sizey; ++y) {
-				terrains[x, y] = (TerrainType)(1 << (x+2*y)%3);
-			}
-		}
-		// case our custom map:
+	//	for (int x = 0; x < sizex; ++x) {
+	//		for (int y = 0; y < sizey; ++y) {
+	//			terrains[x, y] = (TerrainType)(1 << (x+2*y)%3);
+	//		}
+	//	}
+        MakeTutorial();
 
-		for (int x = 0; x < sizex; ++x) {
-			terrains[x, 0] = TerrainType.Mountain;
-			terrains[x, 1] = TerrainType.Field;
-			terrains[x, 2] = TerrainType.Road;
-			terrains[x, 3] = TerrainType.Field;
+	}
+
+    public void MakeCustomLevel() {
+        sizex = sizey = 10;
+        for (int x = 0; x < sizex; ++x)
+        {
+            terrains[x, 0] = TerrainType.Mountain;
+            terrains[x, 1] = TerrainType.Field;
+            terrains[x, 2] = TerrainType.Road;
+            terrains[x, 3] = TerrainType.Field;
             terrains[x, 4] = TerrainType.Field;
             terrains[x, 5] = TerrainType.Field;
             terrains[x, 6] = TerrainType.Field;
             terrains[x, 7] = TerrainType.Road;
             terrains[x, 8] = TerrainType.Field;
             terrains[x, 9] = TerrainType.Mountain;
-		}
+        }
         terrains[6, 1] = TerrainType.Forest;
         terrains[5, 1] = TerrainType.Forest;
         terrains[5, 3] = TerrainType.Forest;
@@ -103,7 +108,117 @@ public class GameBoard : ScriptableObject {
         terrains[1, 6] = TerrainType.Forest;
         terrains[0, 8] = TerrainType.Forest;
         terrains[1, 8] = TerrainType.Forest;
-	}
+    }
+
+    public void Lost(TeamColor col)
+    {
+        if (blueTeam is AiTeam)
+            return;
+
+        string t = "";
+        switch (col)
+        {
+            case TeamColor.Blue:
+                t = "Red";
+                break;
+            case TeamColor.Red:
+                t = "Blue";
+                break;
+        }
+
+        CursorScript.Instance.endTextOther.GetComponent<TextMesh>().text = t;
+        CursorScript.Instance.endText.SetActive(true);
+    }
+
+    public void MakeTutorial()
+    {
+        sizex = 15;
+        sizey = 10;
+        for (int x = 0; x < sizex; ++x)
+        {
+            for (int y = 0; y < sizey; ++y)
+            {
+                terrains[x, y] = TerrainType.Field;
+            }
+        }
+
+        terrains[0, 0] = TerrainType.Mountain;
+        terrains[1, 0] = TerrainType.Mountain;
+        terrains[2, 0] = TerrainType.Mountain;
+        terrains[3, 0] = TerrainType.Mountain;
+        terrains[5, 0] = TerrainType.Mountain;
+        terrains[6, 0] = TerrainType.Mountain;
+        terrains[7, 0] = TerrainType.Mountain;
+        terrains[9, 0] = TerrainType.Mountain;
+        terrains[10, 0] = TerrainType.Mountain;
+        terrains[11, 0] = TerrainType.Mountain;
+        terrains[12, 0] = TerrainType.Mountain;
+        terrains[13, 0] = TerrainType.Mountain;
+        terrains[14, 0] = TerrainType.Mountain;
+
+
+        terrains[0, 1] = TerrainType.Mountain;
+        terrains[1, 1] = TerrainType.Mountain;
+        terrains[2, 1] = TerrainType.Mountain;
+        terrains[6, 1] = TerrainType.Mountain;
+        terrains[11, 1] = TerrainType.Mountain;
+        terrains[12, 1] = TerrainType.Mountain;
+        terrains[13, 1] = TerrainType.Mountain;
+        terrains[14, 1] = TerrainType.Mountain;
+
+
+        terrains[0, 2] = TerrainType.Mountain;
+        terrains[12, 2] = TerrainType.Mountain;
+        terrains[13, 2] = TerrainType.Mountain;
+        terrains[14, 2] = TerrainType.Mountain;
+
+        terrains[13, 3] = TerrainType.Mountain;
+        terrains[14, 3] = TerrainType.Mountain;
+
+        terrains[14, 4] = TerrainType.Mountain;
+
+        terrains[0, 5] = TerrainType.Mountain;
+
+
+        terrains[0, 7] = TerrainType.Mountain;
+        terrains[14, 7] = TerrainType.Mountain;
+
+
+        terrains[0, 8] = TerrainType.Mountain;
+        terrains[1, 8] = TerrainType.Mountain;
+        terrains[10, 8] = TerrainType.Mountain;
+        terrains[11, 8] = TerrainType.Mountain;
+        terrains[13, 8] = TerrainType.Mountain;
+        terrains[14, 8] = TerrainType.Mountain;
+
+
+
+        terrains[0, 9] = TerrainType.Mountain;
+        terrains[1, 9] = TerrainType.Mountain;
+        terrains[2, 9] = TerrainType.Mountain;
+        terrains[9, 9] = TerrainType.Mountain;
+        terrains[10, 9] = TerrainType.Mountain;
+        terrains[11, 9] = TerrainType.Mountain;
+        terrains[12, 9] = TerrainType.Mountain;
+        terrains[13, 9] = TerrainType.Mountain;
+        terrains[14, 9] = TerrainType.Mountain;
+
+
+        //FORESTS
+
+        terrains[1, 2] = TerrainType.Forest;
+        terrains[0, 3] = TerrainType.Forest;
+        terrains[14, 6] = TerrainType.Forest;
+        terrains[13, 7] = TerrainType.Forest;
+        terrains[12, 8] = TerrainType.Forest;
+
+        terrains[2, 8] = TerrainType.Forest;
+        terrains[3, 8] = TerrainType.Forest;
+        terrains[3, 9] = TerrainType.Forest;
+        terrains[4, 9] = TerrainType.Forest;
+
+    }
+
 
 	public void changeTeam() {
 		if (someUnitActive)
@@ -145,24 +260,6 @@ public class GameBoard : ScriptableObject {
         }
         return 0;
     }
-
-	public void Lost(TeamColor col) {
-		if (blueTeam is AiTeam)
-			return;
-
-		string t = "";
-		switch (col) {
-		case TeamColor.Blue:
-			t = "Red";
-			break;
-		case TeamColor.Red:
-			t = "Blue";
-			break;
-		}
-
-		CursorScript.Instance.endTextOther.GetComponent<TextMesh> ().text = t;
-		CursorScript.Instance.endText.SetActive(true);
-	}
 
 }
 

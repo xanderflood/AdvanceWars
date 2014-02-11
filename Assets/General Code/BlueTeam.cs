@@ -8,9 +8,13 @@ public class BlueTeam : Team {
 		GameBoard.Instance.blueTeam = this;
 		color = TeamColor.Blue;
 
-
-        addUnit(9, 1, color, 0);
-        addUnit(9, 2, color, 0);
-        addUnit(9, 7, color, 0);
+        if (GameBoard.Instance.curlevel == 1)
+        { //multiplayer
+            addUnit(13, 1, color, 0);
+            addUnit(13, 4, color, 0);
+            //addUnit(9, 7, color, 0);
+        }
+        else { //dead code
+        }
 	}
 }
