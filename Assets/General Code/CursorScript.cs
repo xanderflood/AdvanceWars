@@ -24,7 +24,9 @@ public class CursorScript : MonoBehaviour {
 
 	public GameObject unitMenu;
 	public GameObject currentIndicator;
-	
+	public GameObject endText;
+	public GameObject endTextOther;
+
 	void Update()
 	{
 

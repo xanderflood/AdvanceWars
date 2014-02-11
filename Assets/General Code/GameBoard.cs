@@ -145,5 +145,24 @@ public class GameBoard : ScriptableObject {
         }
         return 0;
     }
+
+	public void Lost(TeamColor col) {
+		if (blueTeam is AiTeam)
+			return;
+
+		string t = "";
+		switch (col) {
+		case TeamColor.Blue:
+			t = "Red";
+			break;
+		case TeamColor.Red:
+			t = "Blue";
+			break;
+		}
+
+		CursorScript.Instance.endTextOther.GetComponent<TextMesh> ().text = t;
+		CursorScript.Instance.endText.SetActive(true);
+	}
+
 }
 

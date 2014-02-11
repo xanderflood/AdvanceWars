@@ -28,6 +28,10 @@ public class Team : MonoBehaviour {
 
 	public void unitDestroyed(Unit unit) {
 		units.Remove (unit);
+
+		if (units.Count == 0) {
+			GameBoard.Instance.Lost (color);
+		}
 	}
 	
 	public void endTurn() {
