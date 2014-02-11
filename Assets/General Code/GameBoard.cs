@@ -127,6 +127,7 @@ public class GameBoard : ScriptableObject {
                 t = "Blue";
                 break;
         }
+        GameBoard.instance.GameOver = true;
 
         CursorScript.Instance.endTextOther.GetComponent<TextMesh>().text = t;
         CursorScript.Instance.endText.SetActive(true);

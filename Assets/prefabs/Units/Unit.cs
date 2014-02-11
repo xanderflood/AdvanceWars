@@ -555,6 +555,10 @@ public abstract class Unit : MonoBehaviour
 
         // first check if we are trying to move off the map. if so return;
         TerrainType terrain;
+        if (xloc < 0 || xloc >= GameBoard.Instance.sizex || yloc < 0 || yloc >= GameBoard.Instance.sizey) {
+            callNextBFS();
+            return;
+        }
         try
         {
             terrain = GameBoard.Instance.terrains[xloc, yloc];

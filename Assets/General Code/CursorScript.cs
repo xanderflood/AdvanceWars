@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
-// code stolen from http://answers.unity3d.com/questions/9885/basic-movement-in-a-grid.html
+
+// code is a modified version of the example found here  http://answers.unity3d.com/questions/9885/basic-movement-in-a-grid.html
 public class CursorScript : MonoBehaviour {
 
 	public static CursorScript Instance;
@@ -32,6 +33,9 @@ public class CursorScript : MonoBehaviour {
 
 		if (GameBoard.Instance.tutorialing)
 			return;
+
+        if (GameBoard.Instance.GameOver)
+            return;
 
 		if (GameBoard.Instance.someUnitAnimating)
 			return;
